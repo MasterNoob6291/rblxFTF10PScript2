@@ -1,0 +1,48 @@
+local R=loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local P=game:GetService("Players")
+local RS=game:GetService("RunService")
+local US=game:GetService("UserInputService")
+local RepS=game:GetService("ReplicatedStorage")
+local LP=P.LocalPlayer
+local C=LP.Character or LP.CharacterAdded:Wait()
+local H=C:WaitForChild("Humanoid")
+local HRP=C:WaitForChild("HumanoidRootPart")
+local Map=workspace:WaitForChild("Map")
+local N,I=false,false
+
+-- Window
+local W=R:CreateWindow({Name="Flee Hub",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+R:Notify({Title="Success!",Content="FTF Hub Loaded! Use 'K' to toggle UI",Duration=3,Image="check",Actions={}})
+
+-- Player Tab
+local PT=W:CreateTab("Player Controls","circle-user")
+PT:CreateSection("Basic Controls") PT:CreateDivider()
+PT:CreateSlider({Name="WalkSpeed",Range={8,500},Increment=1,Suffix="Speed",CurrentValue=16,Flag="WalkSpeed",Callback=function(v) H.WalkSpeed=v end})
+PT:CreateSlider({Name="JumpHeight",Range={5,30},Increment=1,Suffix="Height",CurrentValue=7.2,Flag="JumpHeight",Callback=function(v) H.JumpHeight=v end})
+PT:CreateSection("Movement Enhancements") PT:CreateDivider()
+PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
+PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
+
+-- Teleport
+PT:CreateSection("Teleport Menu") PT:CreateDivider()
+local Sel=nil
+local DD=PT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v) Sel=P:FindFirstChild(v[1]) end})
+local function UpDD() local t={} for _,p in pairs(P:GetPlayers()) do if p~=LP then table.insert(t,p.Name) end end DD:Refresh(t) end
+P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
+PT:CreateButton({Name="Teleport to Player",Callback=function() if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end end})
+PT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function() for _,c in pairs(Map:GetChildren()) do if c:IsA("Model") and c.Name=="ComputerTable" then local s=c:FindFirstChild("Screen") local t=c:FindFirstChild("ComputerTrigger1") if s and t and s.Color~=Color3.fromRGB(60,255,0) then HRP.CFrame=t.CFrame+Vector3.new(0,5,0) break end end end end})
+PT:CreateButton({Name="Teleport to Player in Pod",Callback=function() local f=false for _,p in pairs(P:GetPlayers()) do if p.Character and p.Character~=C then local F,POD=p.Character:GetAttribute("Freezing"),p.Character:GetAttribute("InPod") local hrp=p.Character:FindFirstChild("HumanoidRootPart") if F and POD and hrp then HRP.CFrame=hrp.CFrame+Vector3.new(0,5,0) f=true break end end end if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert",Actions={}}) end end})
+
+-- Statistics Tab
+local ST = W:CreateTab("Statistics","circle-user")
+local StatsSection = ST:CreateSection("Game Stats")
+local Beast1 = ST:CreateLabel("Beast1: LOADING..", "skull")
+local Beast2 = ST:CreateLabel("Beast2: LOADING..", "skull")
+local MapLabel = ST:CreateLabel("Map: LOADING..", "map")  -- renamed so it doesn't conflict with Map variable
+
+-- Update Loop
+RS.Heartbeat:Connect(function()
+    if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
+    if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
+    if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
+end)
