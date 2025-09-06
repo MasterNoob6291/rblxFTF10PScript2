@@ -7,7 +7,7 @@ local N,I=false,false
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
-R:Notify({Title="Success!",Content="FTF Hub Loaded! Use 'K' to toggle UI",Duration=3,Image="check"})
+R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
 local PT=W:CreateTab("Player Controls","circle-user")
@@ -26,7 +26,7 @@ local function UpDD() local t={} for _,p in pairs(P:GetPlayers()) do if p~=LP th
 P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
 PT:CreateButton({Name="Teleport to Player",Callback=function() if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end end})
 PT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function() for _,c in pairs(Map:GetChildren()) do local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1") if c.Name=="ComputerTable" and s and t and s.Color~=Color3.fromRGB(60,255,0) then HRP.CFrame=t.CFrame+Vector3.new(0,5,0) break end end end})
-PT:CreateButton({Name="Teleport to Player in Pod",Callback=function() local f=false for _,p in pairs(P:GetPlayers()) do local hrp=p.Character and p.Character:FindFirstChild("HumanoidRootPart") if p.Character and p.Character~=PChar and p.Character:GetAttribute("Freezing") and p.Character:GetAttribute("InPod") and hrp then HRP.CFrame=hrp.CFrame+Vector3.new(0,5,0) f=true break end end if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"}) end end})
+PT:CreateButton({Name="Teleport to Player in Pod",Callback=function() local f=false for _,p in pairs(P:GetPlayers()) do local hrp=p.Character and p.Character:FindFirstChild("HumanoidRootPart") if p.Character and p.Character~=PChar and p.Character:GetAttribute("InPod") and hrp then HRP.CFrame=hrp.CFrame+Vector3.new(0,5,0) f=true break end end if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"}) end end})
 
 -- Statistics
 local ST=W:CreateTab("Statistics","circle-user")
