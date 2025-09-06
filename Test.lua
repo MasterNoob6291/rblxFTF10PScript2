@@ -66,7 +66,7 @@ PT:CreateButton({Name="Un Freeze",Callback=function()
 end})
 
 -- Invisibility Toggle
-PT:CreateToggle({Name="Invisibility",CurrentValue=false,Flag="Invisibility",Callback=function(v) if v then EnableInvisibility() else DisableInvisibility() end end})
+PT:CreateToggle({Name="Invisibility",CurrentValue=false,Flag="Invisibility",Callback=function(v) if v then DisableInvisibility() else EnableInvisibility() end end})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -193,3 +193,4 @@ LP.CharacterAdded:Connect(function(c)
     PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart")
     DisableInvisibility() -- failsafe reset
 end)
+
