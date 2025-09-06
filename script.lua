@@ -12,15 +12,15 @@ R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Durat
 -- Player Tab
 local PT=W:CreateTab("Player Controls","circle-user")
 PT:CreateSection("Basic Controls") PT:CreateDivider()
-PT:CreateSlider({Name="WalkSpeed",Range={8,500},Increment=1,Suffix="Speed",CurrentValue=16,Flag="WalkSpeed",Callback=function(v) Hum.WalkSpeed=v end})
-PT:CreateSlider({Name="JumpHeight",Range={5,30},Increment=1,Suffix="Height",CurrentValue=7.2,Flag="JumpHeight",Callback=function(v) Hum.JumpHeight=v end})
+PT:CreateInput({Name="WalkSpeed",PlaceholderText="Enter WalkSpeed",RemoveTextAfterFocusLost=true,Callback=function(txt) local v=tonumber(txt) if v then Hum.WalkSpeed=v end end})
+PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextAfterFocusLost=true,Callback=function(txt) local v=tonumber(txt) if v then Hum.JumpHeight=v end end})
 PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
 
 -- Teleports
 PT:CreateSection("Teleport Menu") PT:CreateDivider()
-local Sel,nilDD=nil,nil
+local Sel
 local DD=PT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v) Sel=P:FindFirstChild(v[1]) end})
 local function UpDD() local t={} for _,p in pairs(P:GetPlayers()) do if p~=LP then table.insert(t,p.Name) end end DD:Refresh(t) end
 P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
@@ -40,4 +40,4 @@ end)
 -- Enhancements
 RS.Stepped:Connect(function() if N and PChar then if PChar:FindFirstChild("Torso") then PChar.Torso.CanCollide=false end if HRP then HRP.CanCollide=false end end end)
 US.JumpRequest:Connect(function() if I and Hum and Hum:GetState()==Enum.HumanoidStateType.Freefall then Hum:ChangeState(Enum.HumanoidStateType.Jumping) end end)
-LP.CharacterAdded:Connect(function(char) PChar,H,HRP=char,char:WaitForChild("Humanoid"),char:WaitForChild("HumanoidRootPart") end)
+LP.CharacterAdded:Connect(function(char) PChar,Hum,HRP=char,char:WaitForChild("Humanoid"),char:WaitForChild("HumanoidRootPart") end)
