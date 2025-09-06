@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/MasterNoob6291/rblxFTF10PScript2/refs/heads/main/script.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/MasterNoob6291/rblxFTF10PScript2/refs/heads/main/Test.lua"))()
