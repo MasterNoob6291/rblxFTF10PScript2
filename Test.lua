@@ -89,13 +89,13 @@ TT:CreateButton({
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","circle-user")
 
-ST:CreateSection("Script") PT:CreateDivider()
+ST:CreateSection("Script Statistics") PT:CreateDivider()
 ST:CreateLabel("Version: ".. ScriptVersion,"hash")
-ST:CreateLabel("Mode: ".. Mode,"chevrons-left-right-ellipsis")
+ST:CreateLabel("Mode: ".. Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 
 
-ST:CreateSection("Game") PT:CreateDivider()
+ST:CreateSection("Game Statistics") PT:CreateDivider()
 
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
 RS.Heartbeat:Connect(function()
