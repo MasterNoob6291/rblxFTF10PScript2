@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1.32"
+local ScriptVersion="1.1.33"
 local Mode="Testing"
 
 -- Window
@@ -117,7 +117,8 @@ RS.Heartbeat:Connect(function()
 
     -- Auto-disable enhancements if local player ragdolled and teleport to random player
     if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
-        N,I=false,false
+        PChar:SetAttribute("Ragdoll", false)
+        PChar:SetAttribute("Ragdolled", false)
         -- Teleport to random player
         local ps={}
         for _,plr in ipairs(P:GetPlayers()) do
