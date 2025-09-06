@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1.34"
+local ScriptVersion="1.1.33"
 local Mode="Testing"
 
 -- Window
@@ -17,13 +17,17 @@ local PT=W:CreateTab("Player Controls","circle-user")
 PT:CreateSection("Basic Controls") PT:CreateDivider()
 PT:CreateInput({Name="WalkSpeed",PlaceholderText="Enter WalkSpeed",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then Hum.WalkSpeed=v end end})
 PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then Hum.JumpHeight=v end end})
-PT:CreateSection("Extra Controls") PT:CreateDivider()
+PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
 
+-- Auto Ragdoll toggle
+local AutoRagdollToggle=false
 -- Disable Freeze toggle
 local DisableFreezeToggle=false
 
+PT:CreateSection("Self Protection") PT:CreateDivider()
+PT:CreateToggle({Name="Disable Hit",CurrentValue=false,Flag="AutoRagdoll",Callback=function(v) AutoRagdollToggle=v end})
 PT:CreateToggle({Name="Disable Freeze",CurrentValue=false,Flag="DisableFreeze",Callback=function(v) DisableFreezeToggle=v end})
 
 -- Teleport Tab
@@ -115,6 +119,14 @@ RS.Heartbeat:Connect(function()
     end
     if #hitPlayers>0 then PeopleHitLabel:Set("People Hit: "..table.concat(hitPlayers,", ")) else PeopleHitLabel:Set("People Hit: None") end
 
+    -- Auto-disable enhancements if local player ragdolled and teleport to random player
+    if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
+        local ps={}
+        for _,plr in ipairs(P:GetPlayers()) do
+            if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then table.insert(ps,plr) end
+        end
+        if #ps>0 then local c=ps[math.random(#ps)] HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end
+    end
 
     -- Disable Freeze if toggle is on
     if DisableFreezeToggle then
