@@ -24,13 +24,6 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 -- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
 
-PT:CreateToggle({
-    Name = "Auto Teleport on Unfreeze",
-    CurrentValue = false,
-    Flag = "AutoTPUnfreeze",
-    Callback = function(v) AutoTPUnfreeze = v end
-})
-
 PT:CreateButton({
     Name = "Un Freeze",
     Callback = function()
