@@ -46,6 +46,7 @@ PT:CreateButton({
 
         -- Auto teleport if toggle is enabled
         if AutoTPUnfreeze then
+            wait(0.5)
             local ps = {}
             for _, plr in ipairs(P:GetPlayers()) do
                 if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
