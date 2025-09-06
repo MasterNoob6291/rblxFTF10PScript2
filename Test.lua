@@ -20,10 +20,10 @@ PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextA
 PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
--- Auto Ragdol toggle
-local AutoRagdolToggle=false
+-- Auto Ragdoll toggle
+local AutoRagdollToggle=false
 PT:CreateSection("Self Protection") PT:CreateDivider()
-PT:CreateToggle({Name="Disable Hit",CurrentValue=false,Flag="AutoRagdol",Callback=function(v) AutoRagdolToggle=v end})
+PT:CreateToggle({Name="Disable Hit",CurrentValue=false,Flag="AutoRagdoll",Callback=function(v) AutoRagdollToggle=v end})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -98,7 +98,7 @@ ST:CreateSection("Game Statistics") ST:CreateDivider()
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
 local PeopleHitLabel=ST:CreateLabel("People Hit: None","users")
 
--- Heartbeat for stats and auto-ragdol
+-- Heartbeat for stats and auto-ragdoll
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
@@ -108,14 +108,14 @@ RS.Heartbeat:Connect(function()
     local hitPlayers={}
     for _,plr in ipairs(P:GetPlayers()) do
         local char=plr.Character
-        if char and char:GetAttribute("Ragdol") and char:GetAttribute("Ragdolled") then
+        if char and char:GetAttribute("Ragdoll") and char:GetAttribute("Ragdolled") then
             table.insert(hitPlayers,plr.Name)
         end
     end
     if #hitPlayers>0 then PeopleHitLabel:Set("People Hit: "..table.concat(hitPlayers,", ")) else PeopleHitLabel:Set("People Hit: None") end
 
     -- Auto-disable enhancements if local player ragdolled
-    if AutoRagdolToggle and PChar:GetAttribute("Ragdol") and PChar:GetAttribute("Ragdolled") then
+    if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
         N,I=false,false
     end
 end)
