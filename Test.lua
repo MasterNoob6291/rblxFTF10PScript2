@@ -5,7 +5,7 @@ local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPar
 local Map=workspace:WaitForChild("Map"); local N,I=false,false
 
 -- Window
-local W=R:CreateWindow({Name="Test Flee Hub2",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
@@ -41,11 +41,11 @@ TT:CreateButton({Name="Teleport to Beast",Callback=function()
     local beast1 = RepS.Beast1.Value
     local beast2 = RepS.Beast2.Value
     if beast1 ~= nil then
-        local beast = P:FindFirstChild(beast1)
-        HRP.CFrame = beast.Character.HumanoidRootPart.CFrame
+        local beast = game.Workspace:FindFirstChild(beast1)
+        HRP.CFrame = beast.HumanoidRootPart.CFrame
     elseif beast2 ~= nil then
-        local beast = P:FindFirstChild(beast2)
-        HRP.CFrame = beast.Character.HumanoidRootPart.CFrame
+        local beast = game.Workspace:FindFirstChild(beast2)
+        HRP.CFrame = beast.HumanoidRootPart.CFrame
     end
 end})
 TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
