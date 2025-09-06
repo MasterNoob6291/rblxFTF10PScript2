@@ -5,7 +5,7 @@ local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPar
 local Map=workspace:WaitForChild("Map"); local N,I=false,false
 
 -- Window
-local W=R:CreateWindow({Name="Flee Hub Test 2",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub T",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
@@ -40,12 +40,16 @@ end})
 TT:CreateButton({Name="Teleport to Beast",Callback=function()
     local b1 = RepS:FindFirstChild("Beast1") and RepS.Beast1.Value or nil
     local b2 = RepS:FindFirstChild("Beast2") and RepS.Beast2.Value or nil
-    local beastPlr = (b1 and P:FindFirstChild(b1)) or (b2 and P:FindFirstChild(b2))
-    if beastPlr and beastPlr.Character and beastPlr.Character:FindFirstChild("HumanoidRootPart") then
-        HRP.CFrame = beastPlr.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
-    else
-        R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
+    local beastName = b1 or b2
+    if beastName then
+        for _,m in ipairs(workspace:GetChildren()) do
+            if m:IsA("Model") and m.Name==beastName and m:FindFirstChild("Humanoid") and m:FindFirstChild("HumanoidRootPart") then
+                HRP.CFrame = m.HumanoidRootPart.CFrame + Vector3.new(0,1,0)
+                return
+            end
+        end
     end
+    R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
 end})
 
 TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
