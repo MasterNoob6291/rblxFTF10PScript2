@@ -61,7 +61,6 @@ PT:CreateButton({
         end
     end
 })
-)
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
