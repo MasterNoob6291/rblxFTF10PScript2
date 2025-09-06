@@ -23,8 +23,12 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 
 -- Auto Ragdoll toggle
 local AutoRagdollToggle=false
+-- Disable Freeze toggle
+local DisableFreezeToggle=false
+
 PT:CreateSection("Self Protection") PT:CreateDivider()
 PT:CreateToggle({Name="Disable Hit",CurrentValue=false,Flag="AutoRagdoll",Callback=function(v) AutoRagdollToggle=v end})
+PT:CreateToggle({Name="Disable Freeze",CurrentValue=false,Flag="DisableFreeze",Callback=function(v) DisableFreezeToggle=v end})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -99,7 +103,7 @@ ST:CreateSection("Game Statistics") ST:CreateDivider()
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
 local PeopleHitLabel=ST:CreateLabel("People Hit: None","users")
 
--- Heartbeat for stats and auto-ragdoll
+-- Heartbeat for stats, auto-ragdoll, and freeze
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
@@ -117,14 +121,23 @@ RS.Heartbeat:Connect(function()
 
     -- Auto-disable enhancements if local player ragdolled and teleport to random player
     if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
-        PChar:SetAttribute("Ragdoll", false)
-        PChar:SetAttribute("Ragdolled", false)
-        -- Teleport to random player
         local ps={}
         for _,plr in ipairs(P:GetPlayers()) do
             if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then table.insert(ps,plr) end
         end
         if #ps>0 then local c=ps[math.random(#ps)] HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end
+    end
+
+    -- Disable Freeze if toggle is on
+    if DisableFreezeToggle then
+        local FreezePodRemote=RepS:FindFirstChild("FreezePod")
+        if FreezePodRemote then
+            for _,obj in ipairs(workspace.Map:GetDescendants()) do
+                if obj.Name=="FreezePod" then
+                    FreezePodRemote:FireServer(obj)
+                end
+            end
+        end
     end
 end)
 
