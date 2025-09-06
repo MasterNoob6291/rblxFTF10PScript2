@@ -5,7 +5,7 @@ local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPar
 local Map=workspace:WaitForChild("Map"); local N,I=false,false
 
 -- Window
-local W=R:CreateWindow({Name="Flee Hub Test",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
@@ -38,16 +38,16 @@ TT:CreateButton({Name="Teleport to Random Player",Callback=function()
     else R:Notify({Title="Error",Content="No players to teleport to",Duration=3,Image="triangle-alert"})end
 end})
 TT:CreateButton({Name="Teleport to Beast",Callback=function()
-    local beast1 = RepS.Beast1.Value
-    local beast2 = RepS.Beast2.Value
-    if beast1 ~= nil then
-        local beast = game.Workspace:FindFirstChild(beast1)
-        HRP.CFrame = beast.HumanoidRootPart.CFrame
-    elseif beast2 ~= nil then
-        local beast = game.Workspace:FindFirstChild(beast2)
-        HRP.CFrame = beast.HumanoidRootPart.CFrame
+    local b1 = RepS:FindFirstChild("Beast1") and RepS.Beast1.Value or nil
+    local b2 = RepS:FindFirstChild("Beast2") and RepS.Beast2.Value or nil
+    local beastPlr = (b1 and P:FindFirstChild(b1)) or (b2 and P:FindFirstChild(b2))
+    if beastPlr and beastPlr.Character and beastPlr.Character:FindFirstChild("HumanoidRootPart") then
+        HRP.CFrame = beastPlr.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+    else
+        R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
     end
 end})
+
 TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
     for _,c in pairs(Map:GetChildren())do local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1")
         if c.Name=="ComputerTable"and s and t and s.Color~=Color3.fromRGB(60,255,0)then HRP.CFrame=t.CFrame+Vector3.new(0,5,0)break end
