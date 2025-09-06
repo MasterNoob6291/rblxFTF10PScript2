@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1.34"
+local ScriptVersion="1.1.35"
 local Mode="Testing"
 
 -- Window
@@ -24,7 +24,6 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 -- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
 
-local AutoTPUnfreeze = false
 PT:CreateToggle({
     Name = "Auto Teleport on Unfreeze",
     CurrentValue = false,
@@ -41,23 +40,6 @@ PT:CreateButton({
                 if obj.Name == "FreezePod" then
                     FreezePodRemote:FireServer(obj)
                 end
-            end
-        end
-
-        -- Auto teleport if toggle is enabled
-        if AutoTPUnfreeze then
-            wait(0.5)
-            local ps = {}
-            for _, plr in ipairs(P:GetPlayers()) do
-                if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    table.insert(ps, plr)
-                end
-            end
-            if #ps > 0 then
-                local c = ps[math.random(#ps)]
-                HRP.CFrame = c.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
-            else
-                R:Notify({Title="Error", Content="No players to teleport to", Duration=3, Image="triangle-alert"})
             end
         end
     end
