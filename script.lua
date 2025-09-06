@@ -5,8 +5,8 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1"
-local Mode="Main"
+local ScriptVersion="1.1.35"
+local Mode="Testing"
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -21,10 +21,29 @@ PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
 
--- Disable Freeze toggle
-local DisableFreezeToggle=false
+-- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
-PT:CreateToggle({Name="Disable Freeze",CurrentValue=false,Flag="DisableFreeze",Callback=function(v) DisableFreezeToggle=v end})
+
+PT:CreateToggle({
+    Name = "Auto Teleport on Unfreeze",
+    CurrentValue = false,
+    Flag = "AutoTPUnfreeze",
+    Callback = function(v) AutoTPUnfreeze = v end
+})
+
+PT:CreateButton({
+    Name = "Un Freeze",
+    Callback = function()
+        local FreezePodRemote = RepS:FindFirstChild("FreezePod")
+        if FreezePodRemote then
+            for _, obj in ipairs(workspace.Map:GetDescendants()) do
+                if obj.Name == "FreezePod" then
+                    FreezePodRemote:FireServer(obj)
+                end
+            end
+        end
+    end
+})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -119,35 +138,12 @@ ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 ST:CreateSection("Game Statistics") ST:CreateDivider()
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
-local PeopleHitLabel=ST:CreateLabel("People Hit: None","users")
 
--- Heartbeat for stats and disable freeze
+-- Heartbeat for stats and enhancements
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
-
-    -- Update People Hit (still tracks Ragdoll stats)
-    local hitPlayers={}
-    for _,plr in ipairs(P:GetPlayers()) do
-        local char=plr.Character
-        if char and char:GetAttribute("Ragdoll") and char:GetAttribute("Ragdolled") then
-            table.insert(hitPlayers,plr.Name)
-        end
-    end
-    if #hitPlayers>0 then PeopleHitLabel:Set("People Hit: "..table.concat(hitPlayers,", ")) else PeopleHitLabel:Set("People Hit: None") end
-
-    -- Disable Freeze if toggle is on
-    if DisableFreezeToggle then
-        local FreezePodRemote=RepS:FindFirstChild("FreezePod")
-        if FreezePodRemote then
-            for _,obj in ipairs(workspace.Map:GetDescendants()) do
-                if obj.Name=="FreezePod" then
-                    FreezePodRemote:FireServer(obj)
-                end
-            end
-        end
-    end
 end)
 
 -- Enhancements
@@ -157,13 +153,7 @@ RS.Stepped:Connect(function()
         if HRP then HRP.CanCollide=false end
     end
 end)
-
 US.JumpRequest:Connect(function()
-    if I and Hum and Hum:GetState()==Enum.HumanoidStateType.Freefall then 
-        Hum:ChangeState(Enum.HumanoidStateType.Jumping) 
-    end
+    if I and Hum and Hum:GetState()==Enum.HumanoidStateType.Freefall then Hum:ChangeState(Enum.HumanoidStateType.Jumping) end
 end)
-
-LP.CharacterAdded:Connect(function(c) 
-    PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart") 
-end)
+LP.CharacterAdded:Connect(function(c) PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart") end)
