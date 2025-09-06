@@ -9,34 +9,49 @@ local ScriptVersion="1.2.1"
 local Mode="Testing"
 
 -- Invisibility Vars
-local Invisible=false
-local OriginalHRP,CloneHRP,Highlight
+local Invisible = false
+local SavedPos, CloneChar, Highlight
 
 local function EnableInvisibility()
     if Invisible or not HRP then return end
-    Invisible=true
-    OriginalHRP=HRP
-    local pos=HRP.Position
-    OriginalHRP.Parent=nil
-    CloneHRP=OriginalHRP:Clone()
-    CloneHRP.Parent=PChar
-    Highlight=Instance.new("Highlight")
-    Highlight.Parent=CloneHRP
-    Highlight.FillColor=Color3.fromRGB(0,255,0)
-    Highlight.OutlineColor=Color3.fromRGB(0,0,0)
-    PChar:MoveTo(pos)
+    Invisible = true
+
+    -- Save position and hide real HRP
+    SavedPos = HRP.CFrame
+    HRP.Parent = nil
+
+    -- Clone fake HRP as decoy
+    CloneChar = Instance.new("Part")
+    CloneChar.Name = "FakeHRP"
+    CloneChar.Size = HRP.Size
+    CloneChar.CFrame = SavedPos
+    CloneChar.Anchored = true
+    CloneChar.CanCollide = false
+    CloneChar.Parent = workspace
+
+    -- Add highlight to fake
+    Highlight = Instance.new("Highlight")
+    Highlight.Parent = CloneChar
+    Highlight.FillColor = Color3.fromRGB(0, 255, 0)
+    Highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
 end
+
 local function DisableInvisibility()
     if not Invisible then return end
-    Invisible=false
-    if Highlight then Highlight:Destroy() Highlight=nil end
-    if CloneHRP then CloneHRP:Destroy() CloneHRP=nil end
-    if OriginalHRP then
-        OriginalHRP.Parent=PChar
-        HRP=OriginalHRP
-        OriginalHRP=nil
+    Invisible = false
+
+    -- Teleport real HRP back
+    if HRP and SavedPos then
+        HRP.Parent = PChar
+        HRP.CFrame = SavedPos
     end
+
+    -- Clean up fake HRP + highlight
+    if Highlight then Highlight:Destroy() Highlight = nil end
+    if CloneChar then CloneChar:Destroy() CloneChar = nil end
+    SavedPos = nil
 end
+
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -193,4 +208,3 @@ LP.CharacterAdded:Connect(function(c)
     PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart")
     DisableInvisibility() -- failsafe reset
 end)
-
