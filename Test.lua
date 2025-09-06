@@ -4,8 +4,11 @@ local LP=P.LocalPlayer; local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map"); local N,I=false,false
 
+local ScriptVersion = "1.1.2"
+local Mode = "Testing"
+
 -- Window
-local W=R:CreateWindow({Name="Flee Hub 22222",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
@@ -19,6 +22,7 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
+TT:CreateSection("Teleport To Players") TT:CreateDivider()
 local Sel
 local DD=TT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v)Sel=P:FindFirstChild(v[1])end})
 local function UpDD()
@@ -49,16 +53,18 @@ TT:CreateButton({Name="Teleport to Beast",Callback=function()
     R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
 end})
 
+TT:CreateSection("Teleport To Objects") TT:CreateDivider()
+
+TT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
+    local f=false for _,plr in ipairs(P:GetPlayers())do local hrp=plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+        if plr.Character and plr.Character~=PChar and plr.Character:GetAttribute("InPod")and hrp then HRP.CFrame=hrp.CFrame f=true break end end
+    if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"})end
+end})
 
 TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
     for _,c in pairs(Map:GetChildren())do local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1")
         if c.Name=="ComputerTable"and s and t and s.Color~=Color3.fromRGB(60,255,0)then HRP.CFrame=t.CFrame+Vector3.new(0,5,0)break end
     end
-end})
-TT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
-    local f=false for _,plr in ipairs(P:GetPlayers())do local hrp=plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-        if plr.Character and plr.Character~=PChar and plr.Character:GetAttribute("InPod")and hrp then HRP.CFrame=hrp.CFrame f=true break end end
-    if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"})end
 end})
 
 TT:CreateButton({
@@ -82,6 +88,15 @@ TT:CreateButton({
 
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","circle-user")
+
+ST:CreateSection("Script") PT:CreateDivider()
+ST:CreateLabel("Version: ".. ScriptVersion,"hash")
+ST:CreateLabel("Mode: ".. Mode,"chevrons-left-right-ellipsis")
+ST:CreateLabel("Created by Nugget","book-user")
+
+
+ST:CreateSection("Game") PT:CreateDivider()
+
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1")then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value))end
