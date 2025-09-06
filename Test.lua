@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1.31"
+local ScriptVersion="1.1.32"
 local Mode="Testing"
 
 -- Window
@@ -20,6 +20,7 @@ PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextA
 PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
+
 -- Auto Ragdoll toggle
 local AutoRagdollToggle=false
 PT:CreateSection("Self Protection") PT:CreateDivider()
@@ -114,9 +115,15 @@ RS.Heartbeat:Connect(function()
     end
     if #hitPlayers>0 then PeopleHitLabel:Set("People Hit: "..table.concat(hitPlayers,", ")) else PeopleHitLabel:Set("People Hit: None") end
 
-    -- Auto-disable enhancements if local player ragdolled
+    -- Auto-disable enhancements if local player ragdolled and teleport to random player
     if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
         N,I=false,false
+        -- Teleport to random player
+        local ps={}
+        for _,plr in ipairs(P:GetPlayers()) do
+            if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then table.insert(ps,plr) end
+        end
+        if #ps>0 then local c=ps[math.random(#ps)] HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end
     end
 end)
 
