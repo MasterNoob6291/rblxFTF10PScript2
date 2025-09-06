@@ -5,8 +5,38 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.1.35"
+local ScriptVersion="1.2.1"
 local Mode="Testing"
+
+-- Invisibility Vars
+local Invisible=false
+local OriginalHRP,CloneHRP,Highlight
+
+local function EnableInvisibility()
+    if Invisible or not HRP then return end
+    Invisible=true
+    OriginalHRP=HRP
+    local pos=HRP.Position
+    OriginalHRP.Parent=nil
+    CloneHRP=OriginalHRP:Clone()
+    CloneHRP.Parent=PChar
+    Highlight=Instance.new("Highlight")
+    Highlight.Parent=CloneHRP
+    Highlight.FillColor=Color3.fromRGB(0,255,0)
+    Highlight.OutlineColor=Color3.fromRGB(0,0,0)
+    PChar:MoveTo(pos)
+end
+local function DisableInvisibility()
+    if not Invisible then return end
+    Invisible=false
+    if Highlight then Highlight:Destroy() Highlight=nil end
+    if CloneHRP then CloneHRP:Destroy() CloneHRP=nil end
+    if OriginalHRP then
+        OriginalHRP.Parent=PChar
+        HRP=OriginalHRP
+        OriginalHRP=nil
+    end
+end
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -23,27 +53,20 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 
 -- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
-
-PT:CreateToggle({
-    Name = "Auto Teleport on Unfreeze",
-    CurrentValue = false,
-    Flag = "AutoTPUnfreeze",
-    Callback = function(v) AutoTPUnfreeze = v end
-})
-
-PT:CreateButton({
-    Name = "Un Freeze",
-    Callback = function()
-        local FreezePodRemote = RepS:FindFirstChild("FreezePod")
-        if FreezePodRemote then
-            for _, obj in ipairs(workspace.Map:GetDescendants()) do
-                if obj.Name == "FreezePod" then
-                    FreezePodRemote:FireServer(obj)
-                end
+PT:CreateToggle({Name="Auto Teleport on Unfreeze",CurrentValue=false,Flag="AutoTPUnfreeze",Callback=function(v) AutoTPUnfreeze=v end})
+PT:CreateButton({Name="Un Freeze",Callback=function()
+    local FreezePodRemote=RepS:FindFirstChild("FreezePod")
+    if FreezePodRemote then
+        for _,obj in ipairs(workspace.Map:GetDescendants()) do
+            if obj.Name=="FreezePod" then
+                FreezePodRemote:FireServer(obj)
             end
         end
     end
-})
+end})
+
+-- Invisibility Toggle
+PT:CreateToggle({Name="Invisibility",CurrentValue=false,Flag="Invisibility",Callback=function(v) if v then EnableInvisibility() else DisableInvisibility() end end})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -137,13 +160,23 @@ ST:CreateLabel("Version: "..ScriptVersion,"hash")
 ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 ST:CreateSection("Game Statistics") ST:CreateDivider()
-local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
+local Beast1,Beast2,MapLabel,HitLabel=
+    ST:CreateLabel("Beast1: LOADING..","skull"),
+    ST:CreateLabel("Beast2: LOADING..","skull"),
+    ST:CreateLabel("Map: LOADING..","map"),
+    ST:CreateLabel("Hits: 0","sword")
 
 -- Heartbeat for stats and enhancements
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
+
+    -- If the game exposes a hit counter
+    local hitVal=RepS:FindFirstChild("HitCount") or RepS:FindFirstChild("Hits")
+    if hitVal and hitVal.Value then
+        HitLabel:Set("Hits: "..tostring(hitVal.Value))
+    end
 end)
 
 -- Enhancements
@@ -156,4 +189,7 @@ end)
 US.JumpRequest:Connect(function()
     if I and Hum and Hum:GetState()==Enum.HumanoidStateType.Freefall then Hum:ChangeState(Enum.HumanoidStateType.Jumping) end
 end)
-LP.CharacterAdded:Connect(function(c) PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart") end)
+LP.CharacterAdded:Connect(function(c)
+    PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart")
+    DisableInvisibility() -- failsafe reset
+end)
