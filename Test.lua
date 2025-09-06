@@ -21,14 +21,18 @@ PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
 
--- Auto Ragdoll toggle
-local AutoRagdollToggle=false
--- Disable Freeze toggle
-local DisableFreezeToggle=false
-
+-- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
-PT:CreateToggle({Name="Disable Hit",CurrentValue=false,Flag="AutoRagdoll",Callback=function(v) AutoRagdollToggle=v end})
-PT:CreateToggle({Name="Disable Freeze",CurrentValue=false,Flag="DisableFreeze",Callback=function(v) DisableFreezeToggle=v end})
+PT:CreateButton({Name="Un Freeze",Callback=function()
+    local FreezePodRemote=RepS:FindFirstChild("FreezePod")
+    if FreezePodRemote then
+        for _,obj in ipairs(workspace.Map:GetDescendants()) do
+            if obj.Name=="FreezePod" then
+                FreezePodRemote:FireServer(obj)
+            end
+        end
+    end
+end})
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -44,15 +48,27 @@ local function UpDD()
 end
 P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
 
-TT:CreateButton({Name="Teleport to Player",Callback=function() if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,1,0) end end})
+TT:CreateButton({Name="Teleport to Player",Callback=function() 
+    if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then 
+        HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,1,0) 
+    end 
+end})
+
 TT:CreateButton({Name="Teleport to Random Player",Callback=function()
     local ps={}
     for _,plr in ipairs(P:GetPlayers()) do
-        if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then table.insert(ps,plr) end
+        if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
+            table.insert(ps,plr) 
+        end
     end
-    if #ps>0 then local c=ps[math.random(#ps)] HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0)
-    else R:Notify({Title="Error",Content="No players to teleport to",Duration=3,Image="triangle-alert"}) end
+    if #ps>0 then 
+        local c=ps[math.random(#ps)] 
+        HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0)
+    else 
+        R:Notify({Title="Error",Content="No players to teleport to",Duration=3,Image="triangle-alert"}) 
+    end
 end})
+
 TT:CreateButton({Name="Teleport to Beast",Callback=function()
     for _,plr in ipairs(P:GetPlayers()) do
         if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
@@ -68,10 +84,17 @@ TT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
     local f=false
     for _,plr in ipairs(P:GetPlayers()) do
         local hrp=plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-        if plr.Character and plr.Character~=PChar and plr.Character:GetAttribute("InPod") and hrp then HRP.CFrame=hrp.CFrame f=true break end
+        if plr.Character and plr.Character~=PChar and plr.Character:GetAttribute("InPod") and hrp then 
+            HRP.CFrame=hrp.CFrame 
+            f=true 
+            break 
+        end
     end
-    if not f then R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"}) end
+    if not f then 
+        R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"}) 
+    end
 end})
+
 TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
     for _,c in pairs(Map:GetChildren()) do
         local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1")
@@ -81,6 +104,7 @@ TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
         end
     end
 end})
+
 TT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
     local exits={}
     for _,door in pairs(workspace.Map:GetChildren()) do
@@ -90,7 +114,9 @@ TT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
     end
     if #exits>0 then
         HRP.CFrame=exits[math.random(#exits)].CFrame
-    else R:Notify({Title="Error",Content="No ExitDoors found",Duration=3,Image="triangle-alert"}) end
+    else 
+        R:Notify({Title="Error",Content="No ExitDoors found",Duration=3,Image="triangle-alert"}) 
+    end
 end})
 
 -- Statistics Tab
@@ -101,44 +127,12 @@ ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 ST:CreateSection("Game Statistics") ST:CreateDivider()
 local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
-local PeopleHitLabel=ST:CreateLabel("People Hit: None","users")
 
--- Heartbeat for stats, auto-ragdoll, and freeze
+-- Heartbeat for stats and enhancements
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
-
-    -- Update People Hit
-    local hitPlayers={}
-    for _,plr in ipairs(P:GetPlayers()) do
-        local char=plr.Character
-        if char and char:GetAttribute("Ragdoll") and char:GetAttribute("Ragdolled") then
-            table.insert(hitPlayers,plr.Name)
-        end
-    end
-    if #hitPlayers>0 then PeopleHitLabel:Set("People Hit: "..table.concat(hitPlayers,", ")) else PeopleHitLabel:Set("People Hit: None") end
-
-    -- Auto-disable enhancements if local player ragdolled and teleport to random player
-    if AutoRagdollToggle and PChar:GetAttribute("Ragdoll") and PChar:GetAttribute("Ragdolled") then
-        local ps={}
-        for _,plr in ipairs(P:GetPlayers()) do
-            if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then table.insert(ps,plr) end
-        end
-        if #ps>0 then local c=ps[math.random(#ps)] HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0) end
-    end
-
-    -- Disable Freeze if toggle is on
-    if DisableFreezeToggle then
-        local FreezePodRemote=RepS:FindFirstChild("FreezePod")
-        if FreezePodRemote then
-            for _,obj in ipairs(workspace.Map:GetDescendants()) do
-                if obj.Name=="FreezePod" then
-                    FreezePodRemote:FireServer(obj)
-                end
-            end
-        end
-    end
 end)
 
 -- Enhancements
