@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.21"
+local ScriptVersion="1.2.3"
 local Mode="Testing"
 
 -- Window
@@ -165,37 +165,79 @@ end})
 
 -- Trolling Tab
 local TTroll = W:CreateTab("Trolling","skull")
-TTroll:CreateSection("Doors") TTroll:CreateDivider()
+TTroll:CreateSection("Doors") 
+TTroll:CreateDivider()
 
--- Button: Auto Open All Doors (arg2 = true)
+-- Button: Open Near Doors
 TTroll:CreateButton({
-    Name = "Open All Doors",
+    Name = "Open Near Doors",
     Callback = function()
         for _, obj in pairs(Map:GetDescendants()) do
-            if obj.Name:find("DoorTrigger") and obj.Parent then
+            if obj.Name:find("DoorTrigger") and obj.Parent and (HRP.Position - obj.Position).Magnitude <= 30 then
                 local args1 = { [1] = obj.Parent, [2] = true, [3] = 0 }
                 local args2 = { [1] = obj.Parent, [2] = true, [3] = 1 }
                 RepS.Door:FireServer(unpack(args1))
+                task.wait(0.05)
                 RepS.Door:FireServer(unpack(args2))
             end
         end
     end
 })
 
--- Button: Auto Close All Doors (arg2 = false)
+-- Button: Close Near Doors
 TTroll:CreateButton({
-    Name = "Close All Doors",
+    Name = "Close Near Doors",
     Callback = function()
         for _, obj in pairs(Map:GetDescendants()) do
-            if obj.Name:find("DoorTrigger") and obj.Parent then
+            if obj.Name:find("DoorTrigger") and obj.Parent and (HRP.Position - obj.Position).Magnitude <= 30 then
                 local args1 = { [1] = obj.Parent, [2] = false, [3] = 0 }
                 local args2 = { [1] = obj.Parent, [2] = false, [3] = 1 }
                 RepS.Door:FireServer(unpack(args1))
+                task.wait(0.05)
                 RepS.Door:FireServer(unpack(args2))
             end
         end
     end
 })
+
+-- Button: Teleport + Open Door
+TTroll:CreateButton({
+    Name = "Teleport & Open Door",
+    Callback = function()
+        for _, obj in pairs(Map:GetDescendants()) do
+            if obj.Name:find("DoorTrigger") and obj.Parent then
+                HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
+                task.wait(0.1)
+                local args1 = { [1] = obj.Parent, [2] = true, [3] = 0 }
+                local args2 = { [1] = obj.Parent, [2] = true, [3] = 1 }
+                RepS.Door:FireServer(unpack(args1))
+                task.wait(0.05)
+                RepS.Door:FireServer(unpack(args2))
+                break
+            end
+        end
+    end
+})
+
+-- Button: Teleport + Close Door
+TTroll:CreateButton({
+    Name = "Teleport & Close Door",
+    Callback = function()
+        for _, obj in pairs(Map:GetDescendants()) do
+            if obj.Name:find("DoorTrigger") and obj.Parent then
+                HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
+                task.wait(0.1)
+                local args1 = { [1] = obj.Parent, [2] = false, [3] = 0 }
+                local args2 = { [1] = obj.Parent, [2] = false, [3] = 1 }
+                RepS.Door:FireServer(unpack(args1))
+                task.wait(0.05)
+                RepS.Door:FireServer(unpack(args2))
+                break
+            end
+        end
+    end
+})
+
 
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","circle-user")
