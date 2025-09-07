@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.374"
+local ScriptVersion="1.2.375"
 local Mode="Testing"
 
 -- Window
@@ -195,33 +195,6 @@ TTroll:CreateButton({
     end
 })
 
-local DoorDelay1 = 0.1
-local DoorDelay2 = 0.2
-
-local Delay1 = TTroll:CreateSlider({
-   Name = "Delay1",
-   Range = {0, 0.2},
-   Increment = 0.01,
-   Suffix = "Seconds",
-   CurrentValue = 0.1,
-   Flag = "Delay1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   Delay1 = Value
-   end,
-})
-
-local Delay2 = TTroll:CreateSlider({
-   Name = "Delay2",
-   Range = {0, 0.2},
-   Increment = 0.01,
-   Suffix = "Seconds",
-   CurrentValue = 0.2,
-   Flag = "Delay2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
-   Callback = function(Value)
-   Delay2 = Value
-   end,
-})
-
 -- Button: Teleport + Open Door
 TTroll:CreateButton({
     Name = "Open all Doors",
@@ -229,10 +202,10 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(Delay1)
+                wait(0.02)
                 OpenCloseDoor(true)
                 OpenCloseDoor(true)
-                wait(DoorDelay2)
+                wait(0.035)
             end
         end
     end
@@ -245,10 +218,10 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(Delay1)
+                wait(0.02)
                 OpenCloseDoor(false)
                 OpenCloseDoor(false)
-                wait(Delay2)
+                wait(0.035)
             end
         end
     end
