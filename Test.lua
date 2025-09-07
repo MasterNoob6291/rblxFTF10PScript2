@@ -213,7 +213,7 @@ TTroll:CreateButton({
                 RepS.Door:FireServer(unpack(args1))
                 task.wait(0.01)
                 RepS.Door:FireServer(unpack(args2))
-                task.wait(0.05)
+                task.wait(0.5)
             end
         end
     end
