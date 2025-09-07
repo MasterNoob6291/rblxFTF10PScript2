@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.31"
+local ScriptVersion="1.2.32"
 local Mode="Testing"
 
 -- Window
@@ -232,7 +232,7 @@ TTroll:CreateButton({
                 RepS.Door:FireServer(unpack(args1))
                 task.wait(0.01)
                 RepS.Door:FireServer(unpack(args2))
-                task.wait(0.05)
+                task.wait(0.5)
             end
         end
     end
