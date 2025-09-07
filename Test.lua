@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.454"
+local ScriptVersion="1.2.455"
 local Mode="Testing"
 
 -- Window
@@ -202,10 +202,10 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(0.02)
+                wait(0.04)
                 OpenCloseDoor(true)
                 OpenCloseDoor(true)
-                wait(0.035)
+                wait(0.1)
             end
         end
     end
@@ -218,11 +218,11 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(0.02)
+                wait(0.04)
                 OpenCloseDoor(false)
                 OpenCloseDoor(false)
                 OpenCloseDoor(false)
-                wait(0.05)
+                wait(0.1)
             end
         end
     end
