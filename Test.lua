@@ -206,10 +206,10 @@ TTroll:CreateButton({
     Callback = function()
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
-                HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
+                HRP.CFrame = obj.CFrame
                 task.wait(0.01)
                 for _, obj2 in pairs(Map:GetDescendants()) do
-                    if obj2.Name:find("DoorTrigger") and obj2.Parent and (HRP.Position - obj2.Position).Magnitude <= 30 then
+                    if obj2.Name:find("DoorTrigger") and obj2.Parent then
                         local args1 = { [1] = obj2.Parent, [2] = false, [3] = 0 }
                         local args2 = { [1] = obj2.Parent, [2] = false, [3] = 1 }
                         RepS.Door:FireServer(unpack(args1))
@@ -229,10 +229,10 @@ TTroll:CreateButton({
     Callback = function()
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
-                HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
+                HRP.CFrame = obj.CFrame
                 task.wait(0.01)
                 for _, obj2 in pairs(Map:GetDescendants()) do
-                    if obj2.Name:find("DoorTrigger") and obj2.Parent and (HRP.Position - obj2.Position).Magnitude <= 30 then
+                    if obj2.Name:find("DoorTrigger") and obj2.Parent then
                         local args1 = { [1] = obj2.Parent, [2] = false, [3] = 0 }
                         local args2 = { [1] = obj2.Parent, [2] = false, [3] = 1 }
                         RepS.Door:FireServer(unpack(args1))
