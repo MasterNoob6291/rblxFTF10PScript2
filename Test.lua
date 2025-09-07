@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.37"
+local ScriptVersion="1.2.371"
 local Mode="Testing"
 
 -- Window
@@ -208,7 +208,7 @@ TTroll:CreateButton({
                 wait(0.1)
                 OpenCloseDoor(true)
                 OpenCloseDoor(true)
-                wait(1)
+                wait(0.2)
             end
         end
     end
@@ -224,7 +224,7 @@ TTroll:CreateButton({
                 wait(0.1)
                 OpenCloseDoor(false)
                 OpenCloseDoor(false)
-                wait(1)
+                wait(0.2)
             end
         end
     end
