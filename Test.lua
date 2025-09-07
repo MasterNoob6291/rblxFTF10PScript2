@@ -195,6 +195,7 @@ RS.Heartbeat:Connect(function()
                     [3] = 0
                 }
                 RepS.Door:FireServer(unpack(args))
+                wait(0.01)
                 
                 local args2 = {
                     [1] = obj.Parent,
@@ -205,6 +206,7 @@ RS.Heartbeat:Connect(function()
             end
         end
     end
+    wait(0.01)
 end)
 
 
