@@ -8,51 +8,6 @@ local N,I=false,false
 local ScriptVersion="1.2.1"
 local Mode="Testing"
 
--- Invisibility Vars
-local Invisible = false
-local SavedPos, CloneChar, Highlight
-
-local function EnableInvisibility()
-    if Invisible or not HRP then return end
-    Invisible = true
-
-    -- Save position and hide real HRP
-    SavedPos = HRP.CFrame
-    HRP.Parent = nil
-
-    -- Clone fake HRP as decoy
-    CloneChar = Instance.new("Part")
-    CloneChar.Name = "FakeHRP"
-    CloneChar.Size = HRP.Size
-    CloneChar.CFrame = SavedPos
-    CloneChar.Anchored = true
-    CloneChar.CanCollide = false
-    CloneChar.Parent = workspace
-
-    -- Add highlight to fake
-    Highlight = Instance.new("Highlight")
-    Highlight.Parent = CloneChar
-    Highlight.FillColor = Color3.fromRGB(0, 255, 0)
-    Highlight.OutlineColor = Color3.fromRGB(0, 0, 0)
-end
-
-local function DisableInvisibility()
-    if not Invisible then return end
-    Invisible = false
-
-    -- Teleport real HRP back
-    if HRP and SavedPos then
-        HRP.Parent = PChar
-        HRP.CFrame = SavedPos
-    end
-
-    -- Clean up fake HRP + highlight
-    if Highlight then Highlight:Destroy() Highlight = nil end
-    if CloneChar then CloneChar:Destroy() CloneChar = nil end
-    SavedPos = nil
-end
-
-
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
@@ -68,20 +23,60 @@ PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Cal
 
 -- Self Protection Section
 PT:CreateSection("Self Protection") PT:CreateDivider()
-PT:CreateToggle({Name="Auto Teleport on Unfreeze",CurrentValue=false,Flag="AutoTPUnfreeze",Callback=function(v) AutoTPUnfreeze=v end})
-PT:CreateButton({Name="Un Freeze",Callback=function()
-    local FreezePodRemote=RepS:FindFirstChild("FreezePod")
-    if FreezePodRemote then
-        for _,obj in ipairs(workspace.Map:GetDescendants()) do
-            if obj.Name=="FreezePod" then
-                FreezePodRemote:FireServer(obj)
+
+PT:CreateButton({
+    Name = "Un Freeze",
+    Callback = function()
+        local FreezePodRemote = RepS:FindFirstChild("FreezePod")
+        if FreezePodRemote then
+            for _, obj in ipairs(workspace.Map:GetDescendants()) do
+                if obj.Name == "FreezePod" then
+                    FreezePodRemote:FireServer(obj)
+                end
             end
         end
     end
-end})
+})
 
 -- Invisibility Toggle
-PT:CreateToggle({Name="Invisibility",CurrentValue=false,Flag="Invisibility",Callback=function(v) if v then DisableInvisibility() else EnableInvisibility() end end})
+local invis_on = false
+local savedpos
+
+PT:CreateToggle({
+    Name = "Toggle Invisibility",
+    CurrentValue = false,
+    Flag = "Invisibility",
+    Callback = function(v)
+        invis_on = v
+        if invis_on then
+            savedpos = HRP.CFrame
+            task.wait()
+            PChar:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+            task.wait(0.15)
+
+            local Seat = Instance.new('Seat', workspace)
+            Seat.Anchored = false
+            Seat.CanCollide = false
+            Seat.Name = 'invischair'
+            Seat.Transparency = 1
+            Seat.Position = Vector3.new(-25.95, 84, 3537.55)
+
+            local Weld = Instance.new("Weld", Seat)
+            Weld.Part0 = Seat
+            Weld.Part1 = PChar:FindFirstChild("Torso") or PChar:FindFirstChild("UpperTorso")
+
+            task.wait()
+            Seat.CFrame = savedpos
+
+            R:Notify({Title="Invis On",Content="",Duration=2,Image="check"})
+        else
+            local seat = workspace:FindFirstChild('invischair')
+            if seat then seat:Destroy() end
+            R:Notify({Title="Invis Off",Content="",Duration=2,Image="check"})
+        end
+    end
+})
+
 
 -- Teleport Tab
 local TT=W:CreateTab("Teleports","map-pin")
@@ -175,23 +170,13 @@ ST:CreateLabel("Version: "..ScriptVersion,"hash")
 ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 ST:CreateSection("Game Statistics") ST:CreateDivider()
-local Beast1,Beast2,MapLabel,HitLabel=
-    ST:CreateLabel("Beast1: LOADING..","skull"),
-    ST:CreateLabel("Beast2: LOADING..","skull"),
-    ST:CreateLabel("Map: LOADING..","map"),
-    ST:CreateLabel("Hits: 0","sword")
+local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
 
 -- Heartbeat for stats and enhancements
 RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
-
-    -- If the game exposes a hit counter
-    local hitVal=RepS:FindFirstChild("HitCount") or RepS:FindFirstChild("Hits")
-    if hitVal and hitVal.Value then
-        HitLabel:Set("Hits: "..tostring(hitVal.Value))
-    end
 end)
 
 -- Enhancements
@@ -204,7 +189,4 @@ end)
 US.JumpRequest:Connect(function()
     if I and Hum and Hum:GetState()==Enum.HumanoidStateType.Freefall then Hum:ChangeState(Enum.HumanoidStateType.Jumping) end
 end)
-LP.CharacterAdded:Connect(function(c)
-    PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart")
-    DisableInvisibility() -- failsafe reset
-end)
+LP.CharacterAdded:Connect(function(c) PChar,Hum,HRP=c,c:WaitForChild("Humanoid"),c:WaitForChild("HumanoidRootPart") end)
