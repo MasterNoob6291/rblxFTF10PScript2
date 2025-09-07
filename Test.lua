@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.371"
+local ScriptVersion="1.2.372"
 local Mode="Testing"
 
 -- Window
@@ -174,7 +174,6 @@ local function OpenCloseDoor(State)
                 local args1 = { [1] = obj.Parent, [2] = State, [3] = 0 }
                 local args2 = { [1] = obj.Parent, [2] = State, [3] = 1 }
                 RepS.Door:FireServer(unpack(args1))
-                wait(0.01)
                 RepS.Door:FireServer(unpack(args2))
             end
     end
