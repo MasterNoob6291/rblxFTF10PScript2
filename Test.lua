@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.44"
+local ScriptVersion="1.2.45"
 local Mode="Testing"
 
 -- Window
@@ -242,13 +242,14 @@ TTroll:CreateToggle({
     end
 })
 
+-- Auto Unfreeze function (fires server for all pods)
 local function AutoUnfreeze()
-    for _, pod in pairs(Map:GetDescendants()) do
-        if pod.Name:find("FreezePod") then
-            local args = {
-                [1] = pod
-            }
-            RepS.FreezePod:FireServer(unpack(args))
+    local FreezePodRemote = RepS:FindFirstChild("FreezePod")
+    if FreezePodRemote then
+        for _, pod in pairs(Map:GetDescendants()) do
+            if pod.Name == "FreezePod" then
+                FreezePodRemote:FireServer(pod)
+            end
         end
     end
 end
@@ -260,23 +261,23 @@ task.spawn(function()
             local savedCFrame = HRP.CFrame
             for _,plr in ipairs(P:GetPlayers()) do
                 if plr ~= LP and plr.Character and plr.Character:GetAttribute("InPod") then
-                    for _,pod in pairs(Map:GetDescendants()) do
-                        if pod.Name == "FreezePod" and pod:FindFirstChild("PodTrigger") then
-                            -- teleport to pod
-                            HRP.CFrame = pod.PodTrigger.CFrame
-                            task.wait(0.05)
-                            -- fire server
-                            AutoUnfreeze()
-                            task.wait(0.05)
-                        end
+                    local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        -- teleport to the player stuck in pod
+                        HRP.CFrame = hrp.CFrame + Vector3.new(0, 5, 0)
+                        task.wait(0.05)
+                        -- fire remote(s) to unfreeze
+                        AutoUnfreeze()
+                        task.wait(0.1)
                     end
                 end
             end
-            -- restore original position
+            -- restore your original position
             HRP.CFrame = savedCFrame
         end
     end
 end)
+
 
 
 -- Statistics Tab
