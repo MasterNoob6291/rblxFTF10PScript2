@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.451"
+local ScriptVersion="1.2.452"
 local Mode="Testing"
 
 -- Window
@@ -263,8 +263,8 @@ task.spawn(function()
                 if plr ~= LP and plr.Character and plr.Character:GetAttribute("InPod") then
                     local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
                     if hrp then
-                        -- teleport to the player stuck in pod
-                        HRP.CFrame = hrp.CFrame
+                        -- offset 3 studs forward relative to the player's look direction
+                        HRP.CFrame = hrp.CFrame * CFrame.new(0,0,-3)
                         task.wait(0.05)
                         -- fire remote(s) to unfreeze
                         AutoUnfreeze()
@@ -277,6 +277,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 
 
