@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.3"
+local ScriptVersion="1.2.21"
 local Mode="Testing"
 
 -- Window
@@ -207,13 +207,13 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
-                task.wait(0.1)
+                task.wait(0.02)
                 local args1 = { [1] = obj.Parent, [2] = true, [3] = 0 }
                 local args2 = { [1] = obj.Parent, [2] = true, [3] = 1 }
                 RepS.Door:FireServer(unpack(args1))
-                task.wait(0.05)
+                task.wait(0.01)
                 RepS.Door:FireServer(unpack(args2))
-                break
+                task.wait(0.05)
             end
         end
     end
@@ -226,13 +226,13 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame + Vector3.new(0,3,0)
-                task.wait(0.1)
+                task.wait(0.02)
                 local args1 = { [1] = obj.Parent, [2] = false, [3] = 0 }
                 local args2 = { [1] = obj.Parent, [2] = false, [3] = 1 }
                 RepS.Door:FireServer(unpack(args1))
-                task.wait(0.05)
+                task.wait(0.01)
                 RepS.Door:FireServer(unpack(args2))
-                break
+                task.wait(0.05)
             end
         end
     end
