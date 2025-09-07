@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.1"
+local ScriptVersion="1.2.2"
 local Mode="Testing"
 
 -- Window
@@ -162,6 +162,52 @@ TT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
         R:Notify({Title="Error",Content="No ExitDoors found",Duration=3,Image="triangle-alert"}) 
     end
 end})
+
+-- Trolling Tab
+local TTroll = W:CreateTab("Trolling","emoji-sunglasses")
+TTroll:CreateSection("Doors") TTroll:CreateDivider()
+
+local AutoOpenDoor = false
+local AutoCloseDoor = false
+
+TTroll:CreateToggle({
+    Name = "Auto Open Door",
+    CurrentValue = false,
+    Flag = "AutoOpenDoor",
+    Callback = function(v) AutoOpenDoor = v end
+})
+
+TTroll:CreateToggle({
+    Name = "Auto Close Door",
+    CurrentValue = false,
+    Flag = "AutoCloseDoor",
+    Callback = function(v) AutoCloseDoor = v end
+})
+
+-- Heartbeat loop to handle toggles
+RS.Heartbeat:Connect(function()
+    if AutoOpenDoor or AutoCloseDoor then
+        for _, obj in pairs(Map:GetDescendants()) do
+            if obj.Name:find("DoorTrigger") and obj.Parent then
+                local args = {
+                    [1] = obj.Parent,
+                    [2] = AutoOpenDoor, -- true if AutoOpenDoor, false if AutoCloseDoor
+                    [3] = 0
+                }
+                RepS.Door:FireServer(unpack(args))
+                
+                local args2 = {
+                    [1] = obj.Parent,
+                    [2] = AutoOpenDoor, -- same logic
+                    [3] = 1
+                }
+                RepS.Door:FireServer(unpack(args2))
+            end
+        end
+    end
+end)
+
+
 
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","circle-user")
