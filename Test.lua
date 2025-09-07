@@ -234,13 +234,22 @@ TTroll:CreateDivider()
 local AutoPod = false
 
 TTroll:CreateToggle({
-    Name = "Auto Pod Rescue",
+    Name = "Auto Unfreeze",
     CurrentValue = false,
     Flag = "AutoPodRescue",
     Callback = function(v)
         AutoPod = v
     end
 })
+
+local function AutoUnfreeze()
+    for _, pod in pairs(Map:GetDescendants()) do 
+        if pod.Name:find("FreezePod") then 
+            local args = { [1] = pod } 
+            ReplicatedStorage.FreezePod:FireServer(unpack(args)) 
+        end 
+    end
+end
 
 -- Loop for AutoPod
 task.spawn(function()
@@ -255,11 +264,8 @@ task.spawn(function()
                             HRP.CFrame = pod.PodTrigger.CFrame
                             task.wait(0.05)
                             -- fire server
-                            local args = { [1] = pod }
-                            if RepS:FindFirstChild("FreezePod") then
-                                RepS.FreezePod:FireServer(unpack(args))
-                            end
-                            task.wait(0.05)
+                            AutoUnfreeze()
+                            task.wait(0.1)
                         end
                     end
                 end
