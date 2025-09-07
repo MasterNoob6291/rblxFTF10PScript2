@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.2"
+local ScriptVersion="1.2.21"
 local Mode="Testing"
 
 -- Window
@@ -167,49 +167,35 @@ end})
 local TTroll = W:CreateTab("Trolling","skull")
 TTroll:CreateSection("Doors") TTroll:CreateDivider()
 
-local AutoOpenDoor = false
-local AutoCloseDoor = false
-
-TTroll:CreateToggle({
-    Name = "Auto Open Door",
-    CurrentValue = false,
-    Flag = "AutoOpenDoor",
-    Callback = function(v) AutoOpenDoor = v end
-})
-
-TTroll:CreateToggle({
-    Name = "Auto Close Door",
-    CurrentValue = false,
-    Flag = "AutoCloseDoor",
-    Callback = function(v) AutoCloseDoor = v end
-})
-
--- Heartbeat loop to handle toggles
-RS.Heartbeat:Connect(function()
-    if AutoOpenDoor or AutoCloseDoor then
+-- Button: Auto Open All Doors (arg2 = true)
+TTroll:CreateButton({
+    Name = "Open All Doors",
+    Callback = function()
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
-                local args = {
-                    [1] = obj.Parent,
-                    [2] = AutoOpenDoor, -- true if AutoOpenDoor, false if AutoCloseDoor
-                    [3] = 0
-                }
-                RepS.Door:FireServer(unpack(args))
-                wait(0.01)
-                
-                local args2 = {
-                    [1] = obj.Parent,
-                    [2] = AutoOpenDoor, -- same logic
-                    [3] = 1
-                }
+                local args1 = { [1] = obj.Parent, [2] = true, [3] = 0 }
+                local args2 = { [1] = obj.Parent, [2] = true, [3] = 1 }
+                RepS.Door:FireServer(unpack(args1))
                 RepS.Door:FireServer(unpack(args2))
             end
         end
     end
-    wait(0.01)
-end)
+})
 
-
+-- Button: Auto Close All Doors (arg2 = false)
+TTroll:CreateButton({
+    Name = "Close All Doors",
+    Callback = function()
+        for _, obj in pairs(Map:GetDescendants()) do
+            if obj.Name:find("DoorTrigger") and obj.Parent then
+                local args1 = { [1] = obj.Parent, [2] = false, [3] = 0 }
+                local args2 = { [1] = obj.Parent, [2] = false, [3] = 1 }
+                RepS.Door:FireServer(unpack(args1))
+                RepS.Door:FireServer(unpack(args2))
+            end
+        end
+    end
+})
 
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","circle-user")
