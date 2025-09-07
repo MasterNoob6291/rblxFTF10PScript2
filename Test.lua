@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.375"
+local ScriptVersion="1.2.4"
 local Mode="Testing"
 
 -- Window
@@ -226,6 +226,49 @@ TTroll:CreateButton({
         end
     end
 })
+
+-- Section for Pods
+TTroll:CreateSection("Pods") 
+TTroll:CreateDivider()
+
+local AutoPod = false
+
+TTroll:CreateToggle({
+    Name = "Auto Pod Rescue",
+    CurrentValue = false,
+    Flag = "AutoPodRescue",
+    Callback = function(v)
+        AutoPod = v
+    end
+})
+
+-- Loop for AutoPod
+task.spawn(function()
+    while task.wait(1) do
+        if AutoPod then
+            local savedCFrame = HRP.CFrame
+            for _,plr in ipairs(P:GetPlayers()) do
+                if plr ~= LP and plr.Character and plr.Character:GetAttribute("InPod") then
+                    for _,pod in pairs(Map:GetDescendants()) do
+                        if pod.Name == "FreezePod" and pod:FindFirstChild("PodTrigger") then
+                            -- teleport to pod
+                            HRP.CFrame = pod.PodTrigger.CFrame
+                            task.wait(0.05)
+                            -- fire server
+                            local args = { [1] = pod }
+                            if RepS:FindFirstChild("FreezePod") then
+                                RepS.FreezePod:FireServer(unpack(args))
+                            end
+                            task.wait(0.05)
+                        end
+                    end
+                end
+            end
+            -- restore original position
+            HRP.CFrame = savedCFrame
+        end
+    end
+end)
 
 
 -- Statistics Tab
