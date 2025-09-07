@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.42"
+local ScriptVersion="1.2.43"
 local Mode="Testing"
 
 -- Window
@@ -243,11 +243,13 @@ TTroll:CreateToggle({
 })
 
 local function AutoUnfreeze()
-    for _, pod in pairs(Map:GetDescendants()) do 
-        if pod.Name:find("FreezePod") then 
-            local args = { [1] = pod } 
-            ReplicatedStorage.FreezePod:FireServer(unpack(args)) 
-        end 
+    for _, pod in pairs(Map:GetDescendants()) do
+        if pod.Name:find("FreezePod") then
+            local args = {
+                [1] = pod
+            }
+            RepS.FreezePod:FireServer(unpack(args))
+        end
     end
 end
 
