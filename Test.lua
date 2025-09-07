@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.43"
+local ScriptVersion="1.2.44"
 local Mode="Testing"
 
 -- Window
@@ -267,7 +267,7 @@ task.spawn(function()
                             task.wait(0.05)
                             -- fire server
                             AutoUnfreeze()
-                            task.wait(0.3)
+                            task.wait(0.05)
                         end
                     end
                 end
