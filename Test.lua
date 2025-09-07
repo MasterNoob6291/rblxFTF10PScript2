@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.372"
+local ScriptVersion="1.2.373"
 local Mode="Testing"
 
 -- Window
@@ -195,7 +195,32 @@ TTroll:CreateButton({
     end
 })
 
+local DoorDelay1 = 0.1
+local DoorDelay2 = 0.2
 
+local Delay1 = TTroll:CreateSlider({
+   Name = "Delay1",
+   Range = {0, 0.2},
+   Increment = 10,
+   Suffix = "Seconds",
+   CurrentValue = 10,
+   Flag = "Delay1", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   Delay1 = Value
+   end,
+})
+
+local Delay2 = TTroll:CreateSlider({
+   Name = "Delay2",
+   Range = {0, 0.2},
+   Increment = 10,
+   Suffix = "Seconds",
+   CurrentValue = 10,
+   Flag = "Delay2", -- A flag is the identifier for the configuration file, make sure every element has a different flag if you're using configuration saving to ensure no overlaps
+   Callback = function(Value)
+   Delay2 = Value
+   end,
+})
 
 -- Button: Teleport + Open Door
 TTroll:CreateButton({
@@ -204,10 +229,10 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(0.1)
+                wait(Delay1)
                 OpenCloseDoor(true)
                 OpenCloseDoor(true)
-                wait(0.2)
+                wait(DoorDelay2)
             end
         end
     end
@@ -220,10 +245,10 @@ TTroll:CreateButton({
         for _, obj in pairs(Map:GetDescendants()) do
             if obj.Name:find("DoorTrigger") and obj.Parent then
                 HRP.CFrame = obj.CFrame
-                wait(0.1)
+                wait(Delay1)
                 OpenCloseDoor(false)
                 OpenCloseDoor(false)
-                wait(0.2)
+                wait(Delay2)
             end
         end
     end
