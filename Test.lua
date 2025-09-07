@@ -164,7 +164,7 @@ TT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
 end})
 
 -- Trolling Tab
-local TTroll = W:CreateTab("Trolling","emoji-sunglasses")
+local TTroll = W:CreateTab("Trolling","skull")
 TTroll:CreateSection("Doors") TTroll:CreateDivider()
 
 local AutoOpenDoor = false
