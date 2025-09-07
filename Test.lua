@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.452"
+local ScriptVersion="1.2.453"
 local Mode="Testing"
 
 -- Window
@@ -265,8 +265,9 @@ task.spawn(function()
                     if hrp then
                         -- offset 3 studs forward relative to the player's look direction
                         HRP.CFrame = hrp.CFrame * CFrame.new(0,0,-3)
-                        task.wait(0.05)
+                        task.wait(0.2)
                         -- fire remote(s) to unfreeze
+                        AutoUnfreeze()
                         AutoUnfreeze()
                         task.wait(0.1)
                     end
