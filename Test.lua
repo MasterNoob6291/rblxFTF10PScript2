@@ -171,11 +171,11 @@ TTroll:CreateDivider()
 local function OpenCloseDoor(State)
     for _, obj in pairs(Map:GetDescendants()) do
         if obj.Name:find("DoorTrigger") and obj.Parent then
-                local args1 = { [1] = obj.Parent, [2] = State, [3] = 0 }
-                local args2 = { [1] = obj.Parent, [2] = State, [3] = 1 }
-                RepS.Door:FireServer(unpack(args1))
-                RepS.Door:FireServer(unpack(args2))
-            end
+            local args1 = { [1] = obj.Parent, [2] = State, [3] = 0 }
+            local args2 = { [1] = obj.Parent, [2] = State, [3] = 1 }
+            RepS.Door:FireServer(unpack(args1))
+            RepS.Door:FireServer(unpack(args2))
+        end
     end
 end
 
