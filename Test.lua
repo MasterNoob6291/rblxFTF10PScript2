@@ -215,7 +215,6 @@ TTroll:CreateButton({
             InvisToggle:Set(true)
         end
     end
-    end
 })
 
 -- Section for Pods
