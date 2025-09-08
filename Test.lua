@@ -5,72 +5,61 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.5"
+local ScriptVersion="1.2.61"
 local Mode="Testing"
 
 -- Window
-local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Bloom",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Amethyst",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
+
+-- Constants for speed/jump
+local CustomSpeed,CustomJump=nil,nil
 
 -- Player Tab
 local PT=W:CreateTab("Player Controls","circle-user")
 PT:CreateSection("Basic Controls") PT:CreateDivider()
-PT:CreateInput({Name="WalkSpeed",PlaceholderText="Enter WalkSpeed",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then Hum.WalkSpeed=v end end})
-PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then Hum.JumpHeight=v end end})
+PT:CreateInput({Name="WalkSpeed",PlaceholderText="Enter WalkSpeed",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then CustomSpeed=v Hum.WalkSpeed=v end end})
+PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then CustomJump=v Hum.JumpHeight=v end end})
 PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
 PT:CreateToggle({Name="Infinite Jump",CurrentValue=false,Flag="InfiniteJump",Callback=function(v) I=v end})
 
--- Self Protection Section
+-- Self Protection
 PT:CreateSection("Self Protection") PT:CreateDivider()
-
 PT:CreateButton({
     Name = "Un Freeze",
     Callback = function()
         local FreezePodRemote = RepS:FindFirstChild("FreezePod")
         if FreezePodRemote then
             for _, obj in ipairs(workspace.Map:GetDescendants()) do
-                if obj.Name == "FreezePod" then
-                    FreezePodRemote:FireServer(obj)
-                end
+                if obj.Name == "FreezePod" then FreezePodRemote:FireServer(obj) end
             end
         end
     end
 })
 
 -- Invisibility Toggle
-local invis_on = false
-local savedpos
-
+local invis_on,savedpos=false,nil
 local InvisToggle = PT:CreateToggle({
-    Name = "Toggle Invisibility",
-    CurrentValue = false,
-    Flag = "Invisibility",
-    Callback = function(v)
-        invis_on = v
-        if invis_on then
-            savedpos = HRP.CFrame
+    Name = "Toggle Invisibility",CurrentValue=false,Flag="Invisibility",
+    Callback=function(v)
+        invis_on=v
+        if v then
+            savedpos=HRP.CFrame
             task.wait()
-            PChar:MoveTo(Vector3.new(-25.95, 84, 3537.55))
+            PChar:MoveTo(Vector3.new(-25.95,84,3537.55))
             task.wait(0.15)
-
-            local Seat = Instance.new('Seat', workspace)
-            Seat.Anchored = false
-            Seat.CanCollide = false
-            Seat.Name = 'invischair'
-            Seat.Transparency = 1
-            Seat.Position = Vector3.new(-25.95, 84, 3537.55)
-
-            local Weld = Instance.new("Weld", Seat)
-            Weld.Part0 = Seat
-            Weld.Part1 = PChar:FindFirstChild("Torso") or PChar:FindFirstChild("UpperTorso")
-
+            local Seat=Instance.new('Seat',workspace)
+            Seat.Anchored,Seat.CanCollide,Seat.Transparency=false,false,1
+            Seat.Name,Seat.Position='invischair',Vector3.new(-25.95,84,3537.55)
+            local Weld=Instance.new("Weld",Seat)
+            Weld.Part0=Seat
+            Weld.Part1=PChar:FindFirstChild("Torso") or PChar:FindFirstChild("UpperTorso")
             task.wait()
-            Seat.CFrame = savedpos
-
+            Seat.CFrame=savedpos
             R:Notify({Title="Invis On",Content="",Duration=2,Image="check"})
         else
-            local seat = workspace:FindFirstChild('invischair')
+            local seat=workspace:FindFirstChild('invischair')
             if seat then seat:Destroy() end
             R:Notify({Title="Invis Off",Content="",Duration=2,Image="check"})
         end
@@ -350,13 +339,31 @@ ST:CreateLabel("Version: "..ScriptVersion,"hash")
 ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
 ST:CreateLabel("Created by Nugget","book-user")
 ST:CreateSection("Game Statistics") ST:CreateDivider()
-local Beast1,Beast2,MapLabel=ST:CreateLabel("Beast1: LOADING..","skull"),ST:CreateLabel("Beast2: LOADING..","skull"),ST:CreateLabel("Map: LOADING..","map")
+local Beast1,Beast2,MapLabel,HitsLabel=
+    ST:CreateLabel("Beast1: LOADING..","skull"),
+    ST:CreateLabel("Beast2: LOADING..","skull"),
+    ST:CreateLabel("Map: LOADING..","map"),
+    ST:CreateLabel("Hits: 0","sword")
 
--- Heartbeat for stats and enhancements
+-- Heartbeat for stats + enforce speed/jump
 RS.Heartbeat:Connect(function()
+    -- Keep speed/jump constant
+    if CustomSpeed and Hum.WalkSpeed~=CustomSpeed then Hum.WalkSpeed=CustomSpeed end
+    if CustomJump and Hum.JumpHeight~=CustomJump then Hum.JumpHeight=CustomJump end
+    
+    -- Update stats
     if RepS:FindFirstChild("Beast1") then Beast1:Set("Beast1: "..tostring(RepS.Beast1.Value)) end
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
+
+    -- Count ragdolled players
+    local count=0
+    for _,plr in ipairs(P:GetPlayers()) do
+        if plr.Character and plr.Character:GetAttribute("Ragdolled") then
+            if plr.Character:GetAttribute("Ragdolled")==true then count+=1 end
+        end
+    end
+    HitsLabel:Set("Hits: "..count)
 end)
 
 -- Enhancements
