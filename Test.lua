@@ -9,7 +9,7 @@ local ScriptVersion="1.2.5"
 local Mode="Testing"
 
 -- Window
-local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="AmberGlow",ConfigurationSaving={Enabled=false},KeySystem=false})
+local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Bloom",ConfigurationSaving={Enabled=false},KeySystem=false})
 R:Notify({Title="Success!",Content="Flee Hub Loaded! Use 'K' to toggle UI",Duration=6,Image="check"})
 
 -- Player Tab
