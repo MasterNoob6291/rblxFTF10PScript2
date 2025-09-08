@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.611"
+local ScriptVersion="1.2.7"
 local Mode="Testing"
 
 -- Window
@@ -330,6 +330,65 @@ task.spawn(function()
 end)
 
 
+-- ESP Tab
+local ET = W:CreateTab("ESP","scan-eye")
+ET:CreateSection("Players") ET:CreateDivider()
+
+local PlayerESP, BeastESP = false, false
+
+ET:CreateToggle({
+    Name = "Players ESP",
+    CurrentValue = false,
+    Flag = "PlayersESP",
+    Callback = function(v) PlayerESP = v end
+})
+
+ET:CreateToggle({
+    Name = "Beast ESP",
+    CurrentValue = false,
+    Flag = "BeastESP",
+    Callback = function(v) BeastESP = v end
+})
+
+-- Function to apply highlight
+local function applyHighlight(character, color)
+    if not character then return end
+    local hl = character:FindFirstChild("ESP_Highlight")
+    if not hl then
+        hl = Instance.new("Highlight")
+        hl.Name = "ESP_Highlight"
+        hl.FillTransparency = 0.5
+        hl.OutlineTransparency = 0
+        hl.Parent = character
+    end
+    hl.FillColor = color
+    hl.Enabled = true
+end
+
+-- Function to clear highlight
+local function clearHighlight(character)
+    if not character then return end
+    local hl = character:FindFirstChild("ESP_Highlight")
+    if hl then hl.Enabled = false end
+end
+
+-- Heartbeat loop for ESP
+RS.Heartbeat:Connect(function()
+    for _,plr in ipairs(P:GetPlayers()) do
+        if plr ~= LP and plr.Character then
+            local char = plr.Character
+            local hammer = char:FindFirstChild("Hammer")
+
+            if PlayerESP and not hammer then
+                applyHighlight(char, Color3.fromRGB(0,255,0)) -- green
+            elseif BeastESP and hammer then
+                applyHighlight(char, Color3.fromRGB(255,0,0)) -- red
+            else
+                clearHighlight(char)
+            end
+        end
+    end
+end)
 
 
 -- Statistics Tab
