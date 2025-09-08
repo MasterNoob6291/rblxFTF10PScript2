@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.457"
+local ScriptVersion="1.2.458"
 local Mode="Testing"
 
 -- Window
@@ -187,12 +187,12 @@ TTroll:CreateButton({
         if invis_on then 
             wasinvis = true 
             InvisToggle:Set(false)
-            wait(0.1)
+            wait(0.2)
         end
         OpenCloseDoor(true)
         if wasinvis then 
             OpenCloseDoor(true)
-            wait(0.1)
+            wait(0.2)
             wasinvis = false 
             InvisToggle:Set(true)
         end
@@ -207,13 +207,13 @@ TTroll:CreateButton({
         if invis_on then 
             wasinvis = true 
             InvisToggle:Set(false)
-            wait(0.1)
+            wait(0.2)
         end
         
         OpenCloseDoor(false)
         if wasinvis then 
             OpenCloseDoor(false)
-             wait(0.1)
+             wait(0.2)
             wasinvis = false 
             InvisToggle:Set(true)
         end
