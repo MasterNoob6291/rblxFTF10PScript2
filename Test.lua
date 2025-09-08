@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.455"
+local ScriptVersion="1.2.456"
 local Mode="Testing"
 
 -- Window
@@ -42,7 +42,7 @@ PT:CreateButton({
 local invis_on = false
 local savedpos
 
-PT:CreateToggle({
+local InvisToggle = PT:CreateToggle({
     Name = "Toggle Invisibility",
     CurrentValue = false,
     Flag = "Invisibility",
@@ -183,7 +183,18 @@ end
 TTroll:CreateButton({
     Name = "Open Near Doors",
     Callback = function()
+        local wasinvis = false
+        if invis_on then 
+            wasinvis = true 
+            InvisToggle:Set(false)
+        end
+        wait(0.01)
         OpenCloseDoor(true)
+        wait(0.02)
+        if wasinvis then 
+            wasinvis = false 
+            InvisToggle:Set(true)
+        end
     end
 })
 
@@ -191,40 +202,19 @@ TTroll:CreateButton({
 TTroll:CreateButton({
     Name = "Close Near Doors",
     Callback = function()
+        local wasinvis = false
+        if invis_on then 
+            wasinvis = true 
+            InvisToggle:Set(false)
+        end
+        wait(0.01)
         OpenCloseDoor(false)
-    end
-})
-
--- Button: Teleport + Open Door
-TTroll:CreateButton({
-    Name = "Open all Doors",
-    Callback = function()
-        for _, obj in pairs(Map:GetDescendants()) do
-            if obj.Name:find("DoorTrigger") and obj.Parent then
-                HRP.CFrame = obj.CFrame
-                wait(0.04)
-                OpenCloseDoor(true)
-                OpenCloseDoor(true)
-                wait(0.1)
-            end
+        wait(0.02)
+        if wasinvis then 
+            wasinvis = false 
+            InvisToggle:Set(true)
         end
     end
-})
-
--- Button: Teleport + Close Door
-TTroll:CreateButton({
-    Name = "Close all Doors",
-    Callback = function()
-        for _, obj in pairs(Map:GetDescendants()) do
-            if obj.Name:find("DoorTrigger") and obj.Parent then
-                HRP.CFrame = obj.CFrame
-                wait(0.04)
-                OpenCloseDoor(false)
-                OpenCloseDoor(false)
-                OpenCloseDoor(false)
-                wait(0.1)
-            end
-        end
     end
 })
 
