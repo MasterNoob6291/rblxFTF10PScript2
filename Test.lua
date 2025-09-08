@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.458"
+local ScriptVersion="1.2.5"
 local Mode="Testing"
 
 -- Window
@@ -79,10 +79,9 @@ local InvisToggle = PT:CreateToggle({
 
 
 -- Teleport Tab
-local TT=W:CreateTab("Teleports","map-pin")
-TT:CreateSection("Teleport To Players") TT:CreateDivider()
+PT:CreateSection("Teleportation") PT:CreateDivider()
 local Sel
-local DD=TT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v) Sel=P:FindFirstChild(v[1]) end})
+local DD=PT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v) Sel=P:FindFirstChild(v[1]) end})
 local function UpDD()
     local t={}
     for _,plr in ipairs(P:GetPlayers()) do
@@ -92,13 +91,13 @@ local function UpDD()
 end
 P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
 
-TT:CreateButton({Name="Teleport to Player",Callback=function() 
+PT:CreateButton({Name="Teleport to Player",Callback=function() 
     if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then 
         HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,1,0) 
     end 
 end})
 
-TT:CreateButton({Name="Teleport to Random Player",Callback=function()
+PT:CreateButton({Name="Teleport to Random Player",Callback=function()
     local ps={}
     for _,plr in ipairs(P:GetPlayers()) do
         if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
@@ -113,7 +112,7 @@ TT:CreateButton({Name="Teleport to Random Player",Callback=function()
     end
 end})
 
-TT:CreateButton({Name="Teleport to Beast",Callback=function()
+PT:CreateButton({Name="Teleport to Beast",Callback=function()
     for _,plr in ipairs(P:GetPlayers()) do
         if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
             HRP.CFrame=plr.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0)
@@ -123,8 +122,8 @@ TT:CreateButton({Name="Teleport to Beast",Callback=function()
     R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
 end})
 
-TT:CreateSection("Teleport To Objects") TT:CreateDivider()
-TT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
+PT:CreateSection("Teleport To Objects") PT:CreateDivider()
+PT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
     local f=false
     for _,plr in ipairs(P:GetPlayers()) do
         local hrp=plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
@@ -139,7 +138,7 @@ TT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
     end
 end})
 
-TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
+PT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
     for _,c in pairs(Map:GetChildren()) do
         local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1")
         if c.Name=="ComputerTable" and s and t and s.Color~=Color3.fromRGB(60,255,0) then
@@ -149,7 +148,7 @@ TT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
     end
 end})
 
-TT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
+PT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
     local exits={}
     for _,door in pairs(workspace.Map:GetChildren()) do
         if door.Name=="ExitDoor" and door:FindFirstChild("ExitDoorTrigger") then
@@ -221,7 +220,7 @@ TTroll:CreateButton({
 })
 
 -- Section for Pods
-TTroll:CreateSection("Pods") 
+TTroll:CreateSection("Main Trolls") 
 TTroll:CreateDivider()
 
 local AutoPod = false
@@ -234,6 +233,74 @@ TTroll:CreateToggle({
         AutoPod = v
     end
 })
+
+-- Anti-Beast Section
+
+local AutoBeastInvis = false
+local BeastDistance = 10
+local AutoInvisActive = false -- tracks if our system turned invis ON
+
+-- Toggle
+TTroll:CreateToggle({
+    Name = "Auto Invis Near Beast",
+    CurrentValue = false,
+    Flag = "AutoBeastInvis",
+    Callback = function(v)
+        AutoBeastInvis = v
+        if not v and AutoInvisActive then
+            AutoInvisActive = false
+            InvisToggle:Set(false) -- turn off if we had enabled it
+        end
+    end
+})
+
+-- Slider
+TTroll:CreateSlider({
+    Name = "Beast Distance",
+    Range = {3,30},
+    Increment = 1,
+    Suffix = "studs",
+    CurrentValue = BeastDistance,
+    Flag = "BeastDistance",
+    Callback = function(v)
+        BeastDistance = v
+    end
+})
+
+-- Loop to check distance
+task.spawn(function()
+    while task.wait(0.3) do
+        if AutoBeastInvis and PChar and HRP then
+            local nearestBeast, dist
+            for _,plr in ipairs(P:GetPlayers()) do
+                if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                    if plr.Character:FindFirstChild("Hammer") then
+                        local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                        if not dist or d < dist then
+                            dist = d
+                            nearestBeast = plr
+                        end
+                    end
+                end
+            end
+
+            if nearestBeast and dist <= BeastDistance then
+                -- Beast close
+                if not invis_on and not AutoInvisActive then
+                    AutoInvisActive = true
+                    InvisToggle:Set(true)
+                end
+            else
+                -- No beast close
+                if AutoInvisActive then
+                    AutoInvisActive = false
+                    InvisToggle:Set(false)
+                end
+            end
+        end
+    end
+end)
+
 
 -- Auto Unfreeze function (fires server for all pods)
 local function AutoUnfreeze()
@@ -277,7 +344,7 @@ end)
 
 
 -- Statistics Tab
-local ST=W:CreateTab("Statistics","circle-user")
+local ST=W:CreateTab("Statistics","align-end-horizontal")
 ST:CreateSection("Script Statistics") ST:CreateDivider()
 ST:CreateLabel("Version: "..ScriptVersion,"hash")
 ST:CreateLabel("Mode: "..Mode,"arrow-big-right-dash")
