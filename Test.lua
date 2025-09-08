@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.61"
+local ScriptVersion="1.2.611"
 local Mode="Testing"
 
 -- Window
@@ -356,15 +356,22 @@ RS.Heartbeat:Connect(function()
     if RepS:FindFirstChild("Beast2") then Beast2:Set("Beast2: "..tostring(RepS.Beast2.Value)) end
     if RepS:FindFirstChild("MapName") then MapLabel:Set("Map: "..tostring(RepS.MapName.Value)) end
 
-    -- Count ragdolled players
-    local count=0
+    -- List ragdolled players
+    local ragdolled = {}
     for _,plr in ipairs(P:GetPlayers()) do
         if plr.Character and plr.Character:GetAttribute("Ragdolled") then
-            if plr.Character:GetAttribute("Ragdolled")==true then count+=1 end
+            if plr.Character:GetAttribute("Ragdolled")==true then
+                table.insert(ragdolled, plr.Name)
+            end
         end
     end
-    HitsLabel:Set("Hits: "..count)
+    if #ragdolled > 0 then
+        HitsLabel:Set("Hits: "..table.concat(ragdolled, ", "))
+    else
+        HitsLabel:Set("Hits: none")
+    end
 end)
+
 
 -- Enhancements
 RS.Stepped:Connect(function()
