@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.7"
+local ScriptVersion="1.2.71"
 local Mode="Testing"
 
 -- Window
@@ -227,6 +227,7 @@ TTroll:CreateToggle({
 
 local AutoBeastInvis = false
 local BeastDistance = 10
+local BufferDistance = 5
 local AutoInvisActive = false -- tracks if our system turned invis ON
 
 -- Toggle
@@ -255,6 +256,34 @@ TTroll:CreateSlider({
         BeastDistance = v
     end
 })
+
+-- Beast check loop with +5 buffer
+task.spawn(function()
+    while task.wait(0.3) do
+        if AutoBeastInvis and PChar and HRP then
+            local nearest, dist
+            for _,plr in ipairs(P:GetPlayers()) do
+                if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
+                    local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                    if not dist or d < dist then
+                        dist, nearest = d, plr
+                    end
+                end
+            end
+
+            if nearest and dist <= BeastDistance then
+                if not AutoInvisActive then
+                    AutoInvisActive = true
+                    InvisToggle:Set(true)
+                end
+            elseif AutoInvisActive and (not nearest or dist >= BeastDistance + BufferDistance) then
+                AutoInvisActive = false
+                InvisToggle:Set(false)
+            end
+        end
+    end
+end)
+
 
 -- Loop to check distance
 task.spawn(function()
