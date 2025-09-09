@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.72"
+local ScriptVersion="1.2.7"
 local Mode="Testing"
 
 -- Window
@@ -222,120 +222,6 @@ TTroll:CreateToggle({
         AutoPod = v
     end
 })
-
--- Anti-Beast Section
-
-local AutoBeastInvis = false
-local BeastDistance = 10
-local BeastBuffer = 10
-local AutoInvisActive = false -- tracks if our system turned invis ON
-
--- Toggle
-TTroll:CreateToggle({
-    Name = "Auto Invis Near Beast",
-    CurrentValue = false,
-    Flag = "AutoBeastInvis",
-    Callback = function(v)
-        AutoBeastInvis = v
-        if not v and AutoInvisActive then
-            AutoInvisActive = false
-            InvisToggle:Set(false) -- turn off if system had enabled it
-        end
-    end
-})
-
--- Slider
-TTroll:CreateSlider({
-    Name = "Beast Distance",
-    Range = {3,30},
-    Increment = 1,
-    Suffix = "studs",
-    CurrentValue = BeastDistance,
-    Flag = "BeastDistance",
-    Callback = function(v)
-        BeastDistance = v
-    end
-})
-
--- Beast check loop with +5 buffer and multiple beasts
-task.spawn(function()
-    while task.wait(0.3) do
-        if AutoBeastInvis and PChar and HRP then
-            local anyBeastClose = false
-
-            for _,plr in ipairs(P:GetPlayers()) do
-                if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
-                    local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                    if d <= BeastDistance then
-                        anyBeastClose = true
-                        break -- no need to check further, one is enough
-                    end
-                end
-            end
-
-            if anyBeastClose then
-                if not AutoInvisActive then
-                    AutoInvisActive = true
-                    InvisToggle:Set(true)
-                end
-            else
-                -- Only turn off if ALL beasts are farther than BeastDistance + 5
-                local allBeastsFar = true
-                for _,plr in ipairs(P:GetPlayers()) do
-                    if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
-                        local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                        if d < BeastDistance + BeastBuffer then
-                            allBeastsFar = false
-                            break
-                        end
-                    end
-                end
-
-                if allBeastsFar and AutoInvisActive then
-                    AutoInvisActive = false
-                    InvisToggle:Set(false)
-                end
-            end
-        end
-    end
-end)
-
-
-
--- Loop to check distance
-task.spawn(function()
-    while task.wait(0.3) do
-        if AutoBeastInvis and PChar and HRP then
-            local nearestBeast, dist
-            for _,plr in ipairs(P:GetPlayers()) do
-                if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-                    if plr.Character:FindFirstChild("Hammer") then
-                        local d = (HRP.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                        if not dist or d < dist then
-                            dist = d
-                            nearestBeast = plr
-                        end
-                    end
-                end
-            end
-
-            if nearestBeast and dist <= BeastDistance then
-                -- Beast close
-                if not invis_on and not AutoInvisActive then
-                    AutoInvisActive = true
-                    InvisToggle:Set(true)
-                end
-            else
-                -- No beast close
-                if AutoInvisActive then
-                    AutoInvisActive = false
-                    InvisToggle:Set(false)
-                end
-            end
-        end
-    end
-end)
-
 
 -- Auto Unfreeze function (fires server for all pods)
 local function AutoUnfreeze()
