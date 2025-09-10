@@ -134,7 +134,7 @@ TPTab:CreateButton({
     end
 })
 
-TPTab:CreateSection("Object Teleportations") PT:CreateDivider()
+TPTab:CreateSection("Object Teleportations") TPTab:CreateDivider()
 
 -- Teleport to Player in Pod
 TPTab:CreateButton({
