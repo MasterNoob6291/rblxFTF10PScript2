@@ -5,9 +5,8 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.72"
+local ScriptVersion="1.2.73"
 local Mode="Testing"
-print(ScriptVersion)
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Amethyst",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -70,7 +69,7 @@ local InvisToggle = PT:CreateToggle({
 
 -- Teleportation Tab
 local TPTab = W:CreateTab("Teleportation","map-pin") -- new tab
-
+PT:CreateSection("Player Teleportations") PT:CreateDivider()
 -- Player Selection Dropdown
 local Sel
 local DD = TPTab:CreateDropdown({
@@ -133,6 +132,8 @@ TPTab:CreateButton({
         R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
     end
 })
+
+PT:CreateSection("Object Teleportations") PT:CreateDivider()
 
 -- Teleport to Player in Pod
 TPTab:CreateButton({
