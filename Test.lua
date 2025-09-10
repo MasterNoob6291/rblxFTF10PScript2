@@ -7,6 +7,7 @@ local Map=workspace:WaitForChild("Map")
 local N,I=false,false
 local ScriptVersion="1.2.73"
 local Mode="Testing"
+print(ScriptVersion)
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Amethyst",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -69,7 +70,7 @@ local InvisToggle = PT:CreateToggle({
 
 -- Teleportation Tab
 local TPTab = W:CreateTab("Teleportation","map-pin") -- new tab
-PT:CreateSection("Player Teleportations") PT:CreateDivider()
+TPTab:CreateSection("Player Teleportations") TPTab:CreateDivider()
 -- Player Selection Dropdown
 local Sel
 local DD = TPTab:CreateDropdown({
@@ -133,7 +134,7 @@ TPTab:CreateButton({
     end
 })
 
-PT:CreateSection("Object Teleportations") PT:CreateDivider()
+TPTab:CreateSection("Object Teleportations") PT:CreateDivider()
 
 -- Teleport to Player in Pod
 TPTab:CreateButton({
