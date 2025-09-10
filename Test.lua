@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.71"
+local ScriptVersion="1.2.7"
 local Mode="Testing"
 
 -- Window
@@ -68,7 +68,7 @@ local InvisToggle = PT:CreateToggle({
 
 
 -- Teleportation Tab
-local TPTab = W:CreateTab("Teleportation","location") -- new tab
+local TPTab = W:CreateTab("Teleportation","map-pin") -- new tab
 
 -- Player Selection Dropdown
 local Sel
