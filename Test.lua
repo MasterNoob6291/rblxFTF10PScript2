@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.7"
+local ScriptVersion="1.2.71"
 local Mode="Testing"
 
 -- Window
@@ -67,89 +67,123 @@ local InvisToggle = PT:CreateToggle({
 })
 
 
--- Teleport Tab
-PT:CreateSection("Teleportation") PT:CreateDivider()
+-- Teleportation Tab
+local TPTab = W:CreateTab("Teleportation","location") -- new tab
+
+-- Player Selection Dropdown
 local Sel
-local DD=PT:CreateDropdown({Name="Select Player",Options={},CurrentOption="",Flag="PlayerDropdown",Callback=function(v) Sel=P:FindFirstChild(v[1]) end})
+local DD = TPTab:CreateDropdown({
+    Name = "Select Player",
+    Options = {},
+    CurrentOption = "",
+    Flag = "PlayerDropdown",
+    Callback = function(v) Sel = P:FindFirstChild(v[1]) end
+})
 local function UpDD()
-    local t={}
+    local t = {}
     for _,plr in ipairs(P:GetPlayers()) do
-        if plr~=LP then table.insert(t,plr.Name) end
+        if plr ~= LP then table.insert(t, plr.Name) end
     end
     DD:Refresh(t)
 end
-P.PlayerAdded:Connect(UpDD) P.PlayerRemoving:Connect(UpDD) UpDD()
+P.PlayerAdded:Connect(UpDD)
+P.PlayerRemoving:Connect(UpDD)
+UpDD()
 
-PT:CreateButton({Name="Teleport to Player",Callback=function() 
-    if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then 
-        HRP.CFrame=Sel.Character.HumanoidRootPart.CFrame+Vector3.new(0,1,0) 
-    end 
-end})
-
-PT:CreateButton({Name="Teleport to Random Player",Callback=function()
-    local ps={}
-    for _,plr in ipairs(P:GetPlayers()) do
-        if plr~=LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
-            table.insert(ps,plr) 
+-- Teleport to Player
+TPTab:CreateButton({
+    Name = "Teleport to Player",
+    Callback = function()
+        if Sel and Sel.Character and Sel.Character:FindFirstChild("HumanoidRootPart") then
+            HRP.CFrame = Sel.Character.HumanoidRootPart.CFrame + Vector3.new(0,1,0)
         end
     end
-    if #ps>0 then 
-        local c=ps[math.random(#ps)] 
-        HRP.CFrame=c.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0)
-    else 
-        R:Notify({Title="Error",Content="No players to teleport to",Duration=3,Image="triangle-alert"}) 
-    end
-end})
+})
 
-PT:CreateButton({Name="Teleport to Beast",Callback=function()
-    for _,plr in ipairs(P:GetPlayers()) do
-        if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
-            HRP.CFrame=plr.Character.HumanoidRootPart.CFrame+Vector3.new(0,5,0)
-            return
+-- Teleport to Random Player
+TPTab:CreateButton({
+    Name = "Teleport to Random Player",
+    Callback = function()
+        local ps = {}
+        for _,plr in ipairs(P:GetPlayers()) do
+            if plr ~= LP and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then 
+                table.insert(ps, plr)
+            end
+        end
+        if #ps > 0 then
+            local c = ps[math.random(#ps)]
+            HRP.CFrame = c.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+        else
+            R:Notify({Title="Error",Content="No players to teleport to",Duration=3,Image="triangle-alert"})
         end
     end
-    R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
-end})
+})
 
-PT:CreateSection("Teleport To Objects") PT:CreateDivider()
-PT:CreateButton({Name="Teleport to Player in Pod",Callback=function()
-    local f=false
-    for _,plr in ipairs(P:GetPlayers()) do
-        local hrp=plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-        if plr.Character and plr.Character~=PChar and plr.Character:GetAttribute("InPod") and hrp then 
-            HRP.CFrame=hrp.CFrame 
-            f=true 
-            break 
+-- Teleport to Beast
+TPTab:CreateButton({
+    Name = "Teleport to Beast",
+    Callback = function()
+        for _,plr in ipairs(P:GetPlayers()) do
+            if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Hammer") then
+                HRP.CFrame = plr.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+                return
+            end
+        end
+        R:Notify({Title="Error",Content="No Beast found",Duration=3,Image="triangle-alert"})
+    end
+})
+
+-- Teleport to Player in Pod
+TPTab:CreateButton({
+    Name = "Teleport to Player in Pod",
+    Callback = function()
+        local f = false
+        for _,plr in ipairs(P:GetPlayers()) do
+            local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+            if plr.Character and plr.Character ~= PChar and plr.Character:GetAttribute("InPod") and hrp then
+                HRP.CFrame = hrp.CFrame
+                f = true
+                break
+            end
+        end
+        if not f then
+            R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"})
         end
     end
-    if not f then 
-        R:Notify({Title="Error",Content="No player was in pod",Duration=3,Image="triangle-alert"}) 
-    end
-end})
+})
 
-PT:CreateButton({Name="Teleport to Incomplete Computer",Callback=function()
-    for _,c in pairs(Map:GetChildren()) do
-        local s,t=c:FindFirstChild("Screen"),c:FindFirstChild("ComputerTrigger1")
-        if c.Name=="ComputerTable" and s and t and s.Color~=Color3.fromRGB(60,255,0) then
-            HRP.CFrame=t.CFrame+Vector3.new(0,5,0)
-            break
+-- Teleport to Incomplete Computer
+TPTab:CreateButton({
+    Name = "Teleport to Incomplete Computer",
+    Callback = function()
+        for _,c in pairs(Map:GetChildren()) do
+            local s,t = c:FindFirstChild("Screen"), c:FindFirstChild("ComputerTrigger1")
+            if c.Name == "ComputerTable" and s and t and s.Color ~= Color3.fromRGB(60,255,0) then
+                HRP.CFrame = t.CFrame + Vector3.new(0,5,0)
+                break
+            end
         end
     end
-end})
+})
 
-PT:CreateButton({Name="Teleport to Random ExitDoor",Callback=function()
-    local exits={}
-    for _,door in pairs(workspace.Map:GetChildren()) do
-        if door.Name=="ExitDoor" and door:FindFirstChild("ExitDoorTrigger") then
-            table.insert(exits,door.ExitDoorTrigger)
+-- Teleport to Random ExitDoor
+TPTab:CreateButton({
+    Name = "Teleport to Random ExitDoor",
+    Callback = function()
+        local exits = {}
+        for _,door in pairs(workspace.Map:GetChildren()) do
+            if door.Name == "ExitDoor" and door:FindFirstChild("ExitDoorTrigger") then
+                table.insert(exits, door.ExitDoorTrigger)
+            end
+        end
+        if #exits > 0 then
+            HRP.CFrame = exits[math.random(#exits)].CFrame
+        else
+            R:Notify({Title="Error",Content="No ExitDoors found",Duration=3,Image="triangle-alert"})
         end
     end
-    if #exits>0 then
-        HRP.CFrame=exits[math.random(#exits)].CFrame
-    else 
-        R:Notify({Title="Error",Content="No ExitDoors found",Duration=3,Image="triangle-alert"}) 
-    end
-end})
+})
+
 
 -- Trolling Tab
 local TTroll = W:CreateTab("Trolling","skull")
