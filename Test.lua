@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.2.73"
+local ScriptVersion="1.3"
 local Mode="Testing"
 print(ScriptVersion)
 
@@ -358,6 +358,99 @@ RS.Heartbeat:Connect(function()
         end
     end
 end)
+
+-- Keybinds Tab
+local KB = W:CreateTab("Keybinds","keyboard")
+KB:CreateSection("Quick Keybinds") KB:CreateDivider()
+
+-- Noclip
+KB:CreateKeybind({
+    Name = "Toggle Noclip",
+    CurrentKeybind = "N",
+    HoldToInteract = false,
+    Flag = "KB_Noclip",
+    Callback = function()
+        N = not N
+        R:Notify({Title="Keybind",Content="Noclip: "..tostring(N),Duration=2,Image="check"})
+    end
+})
+
+-- Infinite Jump
+KB:CreateKeybind({
+    Name = "Toggle Infinite Jump",
+    CurrentKeybind = "J",
+    HoldToInteract = false,
+    Flag = "KB_InfJump",
+    Callback = function()
+        I = not I
+        R:Notify({Title="Keybind",Content="Infinite Jump: "..tostring(I),Duration=2,Image="check"})
+    end
+})
+
+-- Invisibility
+KB:CreateKeybind({
+    Name = "Toggle Invisibility",
+    CurrentKeybind = "I",
+    HoldToInteract = false,
+    Flag = "KB_Invis",
+    Callback = function()
+        InvisToggle:Set(not invis_on)
+    end
+})
+
+-- Open Doors
+KB:CreateKeybind({
+    Name = "Open Near Doors",
+    CurrentKeybind = "O",
+    HoldToInteract = false,
+    Flag = "KB_OpenDoors",
+    Callback = function()
+        OpenCloseDoor(true)
+    end
+})
+
+-- Close Doors
+KB:CreateKeybind({
+    Name = "Close Near Doors",
+    CurrentKeybind = "C",
+    HoldToInteract = false,
+    Flag = "KB_CloseDoors",
+    Callback = function()
+        OpenCloseDoor(false)
+    end
+})
+
+-- Auto Unfreeze Toggle
+KB:CreateKeybind({
+    Name = "Toggle Auto Unfreeze",
+    CurrentKeybind = "U",
+    HoldToInteract = false,
+    Flag = "KB_AutoUnfreeze",
+    Callback = function()
+        AutoPod = not AutoPod
+        R:Notify({Title="Keybind",Content="Auto Unfreeze: "..tostring(AutoPod),Duration=2,Image="check"})
+    end
+})
+
+-- Unfreeze Button
+KB:CreateKeybind({
+    Name = "Unfreeze Now",
+    CurrentKeybind = "F",
+    HoldToInteract = false,
+    Flag = "KB_Unfreeze",
+    Callback = function()
+        local FreezePodRemote = RepS:FindFirstChild("FreezePod")
+        if FreezePodRemote then
+            for _, obj in ipairs(workspace.Map:GetDescendants()) do
+                if obj.Name == "FreezePod" then
+                    FreezePodRemote:FireServer(obj)
+                end
+            end
+            R:Notify({Title="Keybind",Content="Unfreeze Activated",Duration=2,Image="check"})
+        end
+    end
+})
+
 
 
 -- Statistics Tab
