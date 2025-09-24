@@ -363,34 +363,10 @@ end)
 local KB = W:CreateTab("Keybinds","keyboard")
 KB:CreateSection("Quick Keybinds") KB:CreateDivider()
 
--- Noclip
-KB:CreateKeybind({
-    Name = "Toggle Noclip",
-    CurrentKeybind = "N",
-    HoldToInteract = false,
-    Flag = "KB_Noclip",
-    Callback = function()
-        N = not N
-        R:Notify({Title="Keybind",Content="Noclip: "..tostring(N),Duration=2,Image="check"})
-    end
-})
-
--- Infinite Jump
-KB:CreateKeybind({
-    Name = "Toggle Infinite Jump",
-    CurrentKeybind = "J",
-    HoldToInteract = false,
-    Flag = "KB_InfJump",
-    Callback = function()
-        I = not I
-        R:Notify({Title="Keybind",Content="Infinite Jump: "..tostring(I),Duration=2,Image="check"})
-    end
-})
-
 -- Invisibility
 KB:CreateKeybind({
     Name = "Toggle Invisibility",
-    CurrentKeybind = "I",
+    CurrentKeybind = "T",
     HoldToInteract = false,
     Flag = "KB_Invis",
     Callback = function()
@@ -401,7 +377,7 @@ KB:CreateKeybind({
 -- Open Doors
 KB:CreateKeybind({
     Name = "Open Near Doors",
-    CurrentKeybind = "O",
+    CurrentKeybind = "F",
     HoldToInteract = false,
     Flag = "KB_OpenDoors",
     Callback = function()
@@ -412,7 +388,7 @@ KB:CreateKeybind({
 -- Close Doors
 KB:CreateKeybind({
     Name = "Close Near Doors",
-    CurrentKeybind = "C",
+    CurrentKeybind = "G",
     HoldToInteract = false,
     Flag = "KB_CloseDoors",
     Callback = function()
@@ -423,7 +399,7 @@ KB:CreateKeybind({
 -- Auto Unfreeze Toggle
 KB:CreateKeybind({
     Name = "Toggle Auto Unfreeze",
-    CurrentKeybind = "U",
+    CurrentKeybind = "M",
     HoldToInteract = false,
     Flag = "KB_AutoUnfreeze",
     Callback = function()
@@ -434,8 +410,8 @@ KB:CreateKeybind({
 
 -- Unfreeze Button
 KB:CreateKeybind({
-    Name = "Unfreeze Now",
-    CurrentKeybind = "F",
+    Name = "Unfreeze",
+    CurrentKeybind = "N",
     HoldToInteract = false,
     Flag = "KB_Unfreeze",
     Callback = function()
