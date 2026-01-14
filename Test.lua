@@ -10,7 +10,7 @@ local Mode="Testing"
 print(ScriptVersion)
 
 local TARGET_SPEED = 16 -- default WalkSpeed
-local SCRIPT_COUNT = 7 -- number of loops to enforce speed
+local SCRIPT_COUNT = 12 -- number of loops to enforce speed
 
 -- Multi-loop WalkSpeed enforcement
 for i = 1, SCRIPT_COUNT do
