@@ -5,7 +5,7 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.32"
+local ScriptVersion="1.33"
 local Mode="Testing"
 print(ScriptVersion)
 
