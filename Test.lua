@@ -5,9 +5,30 @@ local PChar=LP.Character or LP.CharacterAdded:Wait()
 local Hum,HRP=PChar:WaitForChild("Humanoid"),PChar:WaitForChild("HumanoidRootPart")
 local Map=workspace:WaitForChild("Map")
 local N,I=false,false
-local ScriptVersion="1.3"
+local ScriptVersion="1.31"
 local Mode="Testing"
 print(ScriptVersion)
+
+local TARGET_SPEED = 16 -- default WalkSpeed
+local SCRIPT_COUNT = 7 -- number of loops to enforce speed
+
+-- Multi-loop WalkSpeed enforcement
+for i = 1, SCRIPT_COUNT do
+    task.spawn(function()
+        while wait() do
+            coroutine.wrap(function()
+                local character = LP.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        humanoid.WalkSpeed = TARGET_SPEED
+                    end
+                end
+            end)()
+        end
+    end)
+end
+
 
 -- Window
 local W=R:CreateWindow({Name="Flee Hub TEST VERSION",LoadingTitle="Loading...",LoadingSubtitle="by Nugget",Theme="Amethyst",ConfigurationSaving={Enabled=false},KeySystem=false})
@@ -19,7 +40,19 @@ local CustomSpeed,CustomJump=nil,nil
 -- Player Tab
 local PT=W:CreateTab("Player Controls","circle-user")
 PT:CreateSection("Basic Controls") PT:CreateDivider()
-PT:CreateInput({Name="WalkSpeed",PlaceholderText="Enter WalkSpeed",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then CustomSpeed=v Hum.WalkSpeed=v end end})
+PT:CreateInput({
+    Name="WalkSpeed",
+    PlaceholderText="Enter WalkSpeed",
+    RemoveTextAfterFocusLost=true,
+    Callback=function(t)
+        local v = tonumber(t)
+        if v then
+            TARGET_SPEED = v
+            CustomSpeed = v
+        end
+    end
+})
+
 PT:CreateInput({Name="JumpHeight",PlaceholderText="Enter JumpHeight",RemoveTextAfterFocusLost=true,Callback=function(t) local v=tonumber(t) if v then CustomJump=v Hum.JumpHeight=v end end})
 PT:CreateSection("Movement Enhancements") PT:CreateDivider()
 PT:CreateToggle({Name="Noclip",CurrentValue=false,Flag="Noclip",Callback=function(v) N=v end})
@@ -359,75 +392,6 @@ RS.Heartbeat:Connect(function()
     end
 end)
 
--- Keybinds Tab
-local KB = W:CreateTab("Keybinds","keyboard")
-KB:CreateSection("Quick Keybinds") KB:CreateDivider()
-
--- Invisibility
-KB:CreateKeybind({
-    Name = "Toggle Invisibility",
-    CurrentKeybind = "T",
-    HoldToInteract = false,
-    Flag = "KB_Invis",
-    Callback = function()
-        InvisToggle:Set(not invis_on)
-    end
-})
-
--- Open Doors
-KB:CreateKeybind({
-    Name = "Open Near Doors",
-    CurrentKeybind = "F",
-    HoldToInteract = false,
-    Flag = "KB_OpenDoors",
-    Callback = function()
-        OpenCloseDoor(true)
-    end
-})
-
--- Close Doors
-KB:CreateKeybind({
-    Name = "Close Near Doors",
-    CurrentKeybind = "G",
-    HoldToInteract = false,
-    Flag = "KB_CloseDoors",
-    Callback = function()
-        OpenCloseDoor(false)
-    end
-})
-
--- Auto Unfreeze Toggle
-KB:CreateKeybind({
-    Name = "Toggle Auto Unfreeze",
-    CurrentKeybind = "M",
-    HoldToInteract = false,
-    Flag = "KB_AutoUnfreeze",
-    Callback = function()
-        AutoPod = not AutoPod
-        R:Notify({Title="Keybind",Content="Auto Unfreeze: "..tostring(AutoPod),Duration=2,Image="check"})
-    end
-})
-
--- Unfreeze Button
-KB:CreateKeybind({
-    Name = "Unfreeze",
-    CurrentKeybind = "N",
-    HoldToInteract = false,
-    Flag = "KB_Unfreeze",
-    Callback = function()
-        local FreezePodRemote = RepS:FindFirstChild("FreezePod")
-        if FreezePodRemote then
-            for _, obj in ipairs(workspace.Map:GetDescendants()) do
-                if obj.Name == "FreezePod" then
-                    FreezePodRemote:FireServer(obj)
-                end
-            end
-            R:Notify({Title="Keybind",Content="Unfreeze Activated",Duration=2,Image="check"})
-        end
-    end
-})
-
-
 
 -- Statistics Tab
 local ST=W:CreateTab("Statistics","align-end-horizontal")
@@ -445,7 +409,7 @@ local Beast1,Beast2,MapLabel,HitsLabel=
 -- Heartbeat for stats + enforce speed/jump
 RS.Heartbeat:Connect(function()
     -- Keep speed/jump constant
-    if CustomSpeed and Hum.WalkSpeed~=CustomSpeed then Hum.WalkSpeed=CustomSpeed end
+    
     if CustomJump and Hum.JumpHeight~=CustomJump then Hum.JumpHeight=CustomJump end
     
     -- Update stats
